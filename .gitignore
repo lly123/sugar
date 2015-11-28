@@ -1,0 +1,6 @@
+.idea
+*.log
+*.iml
+**/bower_components
+**/build
+**/node_modules
