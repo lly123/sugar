@@ -1,8 +1,11 @@
 import React from 'react';
+import ReactMixin from 'react-mixin';
+import Talker from '../room/Talker'
 
-export default class extends React.Component {
+export class Table extends React.Component {
     constructor(props) {
         super(props);
+        this.id = props.id;
         this.state = {
             header: ['Title1', 'Title2', 'Title3'],
             rows: [
@@ -33,3 +36,6 @@ export default class extends React.Component {
         );
     }
 }
+
+ReactMixin(Table.prototype, Talker);
+export {Table as default}
