@@ -7,35 +7,55 @@ class Room {
     constructor() {
         this.emitter = new EventEmitter();
         this.rooms = [];
+        this.members = [];
     }
 
-    join(roomName, receiver, receiverId = receiver.props.id) {
-        if (_.isUndefined(receiverId)) {
-            throw `Receiver is must be given.`
-        }
-
-        const joinInRoom = function (receiver, room) {
-            room.members.push(receiver);
-            console.debug(`receiver ${receiverId} has joined in room ${room.name}.`);
+    join(roomName, member, memberId = member.props.id) {
+        const findRoom = function () {
+            var room = _.find(this.rooms, r => r.name === roomName);
+            if (!room) {
+                room = {
+                    name: roomName,
+                    members: []
+                };
+                this.rooms.push(room);
+                console.debug(`room ${roomName} has been added.`);
+            }
+            return room;
         };
 
-
-        var room = _.find(this.rooms, r => r.name === roomName);
-        if (room) {
-            if (!_.any(room.members, m => m.id = receiverId)) {
-                joinInRoom(receiver, room);
-            } else {
-                console.debug(`receiver ${receiverId} has existed in room ${roomName}.`);
+        const findMember = function () {
+            var roomMember = _.find(this.members, m => m.id === memberId);
+            if (!roomMember) {
+                roomMember = {
+                    id: memberId,
+                    rooms: []
+                };
+                this.members.push(roomMember);
+                console.debug(`member ${memberId} has been added.`);
             }
-        } else {
-            room = {
-                name: roomName,
-                members: []
-            };
-            this.rooms.push(room);
-            console.debug(`room ${roomName} has been added.`);
-            joinInRoom(receiver, room);
-        }
+            return roomMember;
+        };
+
+        const joinInRoom = function (roomMember, room) {
+            if (_.any(roomMember.rooms, r => r.name === room.name)) {
+                console.debug(`member ${roomMember.id} has already existed in room ${room.name}.`);
+                return;
+            }
+
+            room.members.push(roomMember);
+            roomMember.rooms.push(room);
+
+            ///**
+            // * Add room to this member
+            // */
+            //member.room = this;
+            console.debug(`member ${roomMember.id} has joined in room ${room.name}.`);
+        };
+
+        const room = findRoom.call(this);
+        const roomMember = findMember.call(this);
+        joinInRoom.call(this, roomMember, room);
     }
 
     list() {

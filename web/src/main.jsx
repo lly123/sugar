@@ -3,11 +3,9 @@ import ReactDOM from 'react-dom';
 import Room from './components/room/room';
 import Table from './components/table/table';
 
-const table = <Table id="t01" theme="simple"/>;
-
-Room.join('forAll', table);
-
-ReactDOM.render(
-    table,
+const table = ReactDOM.render(
+    <Table id="t01" theme="simple"/>,
     document.getElementById("app")
 );
+
+Room.join('forAll', table);

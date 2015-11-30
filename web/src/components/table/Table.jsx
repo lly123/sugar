@@ -11,6 +11,7 @@ export default class extends React.Component {
             ]
         };
     }
+
     render() {
         const tableHeader = this.state.header.map(function (v, i) {
             return (<th key={"th" + i}>{v}</th>)
