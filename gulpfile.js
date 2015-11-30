@@ -38,19 +38,17 @@ var react = function () {
 };
 
 var stylus = function () {
-    return gulp.src('./src/css/**/*.styl')
+    return gulp.src('./src/web/css/**/*.styl')
         .pipe($.stylus())
         .pipe($.minifyCss())
         .pipe($.autoprefixer('last 2 version', 'ie 9'))
-        .pipe(gulp.dest('./build/css'));
+        .pipe(gulp.dest('./build/web/css'));
 };
 
 var html = function () {
-    var manifest = gulp.src("./build/rev-manifest.json");
-
-    return gulp.src('./src/index.html')
+    return gulp.src('./src/web/index.html')
         .pipe($.minifyHtml())
-        .pipe(gulp.dest('./build'));
+        .pipe(gulp.dest('./build/web'));
 };
 
 gulp.task('clean', clean);
@@ -67,7 +65,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('webserver', ['html'], function () {
-    gulp.src('./build')
+    gulp.src('./build/web')
         .pipe($.server({
             defaultFile: 'index.html',
             livereload: true

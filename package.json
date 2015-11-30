@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/lly123/sugar.git"
   },
-  "author": "",
+  "author": "liyan li",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/lly123/sugar/issues"
@@ -43,6 +43,7 @@
     "vinyl-transform": "^1.0.0"
   },
   "dependencies": {
+    "express": "^4.13.3",
     "react": "^0.14.3",
     "react-dom": "^0.14.3",
     "react-mixin": "^2.0.2",

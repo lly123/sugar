@@ -38,7 +38,6 @@ class Room {
         if (!roomMember) {
             throw `member [${member.id}] doesn't join in any room`;
         }
-
         _.each(roomMember.rooms, r => this._emitter.emit(r.name, message));
     }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactMixin from 'react-mixin';
-import Talker from '../room/Talker'
+import Talker from '../../common/room/Talker'
 
 export class Table extends React.Component {
     constructor(props) {
