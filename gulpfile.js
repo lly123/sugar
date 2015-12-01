@@ -12,7 +12,7 @@ var clean = function () {
         .pipe($.clean({force: true, read: false}));
 };
 
-var react = function () {
+var jsx = function () {
     var throughBrowserify = through.obj(function (file, enc, next) {
         browserify(file.path,
             {
@@ -37,6 +37,13 @@ var react = function () {
         .pipe(gulp.dest('./build'));
 };
 
+var js = function () {
+    return gulp.src('./src/**/*.js')
+        .pipe($.jshint())
+        .pipe($.uglify())
+        .pipe(gulp.dest('./build'));
+};
+
 var stylus = function () {
     return gulp.src('./src/web/css/**/*.styl')
         .pipe($.stylus())
@@ -54,14 +61,17 @@ var html = function () {
 gulp.task('clean', clean);
 
 gulp.task('stylus', ['clean'], stylus);
-gulp.task('react', ['clean'], react);
-gulp.task('assets', ['stylus', 'react']);
+gulp.task('jsx', ['clean'], jsx);
+gulp.task('js', ['clean'], js);
+gulp.task('assets', ['stylus', 'jsx', 'js']);
 
 gulp.task('html', ['assets'], html);
 
-gulp.task('react-watch', react);
+gulp.task('jsx-watch', jsx);
+gulp.task('js-watch', js);
 gulp.task('watch', function () {
-    gulp.watch('./src/**/*.jsx', ['react-watch']);
+    gulp.watch('./src/**/*.jsx', ['jsx-watch']);
+    gulp.watch('./src/**/*.js', ['js-watch']);
 });
 
 gulp.task('webserver', ['html'], function () {
