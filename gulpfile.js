@@ -17,6 +17,7 @@ var jsx = function () {
         browserify(file.path,
             {
                 extensions: ['.jsx'],
+                bundleExternal: false,
                 debug: true
             })
             .transform("babelify", {presets: ["es2015", "react"]})
