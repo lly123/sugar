@@ -5,7 +5,7 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-import roomServer from './components/server/RoomServer';
+const roomServer = require('./components/server/RoomServer');
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
