@@ -24,7 +24,7 @@ class Room {
              * Add room property to this member
              */
             member.room = this;
-            member.joinedRoom();
+            member.joinedRoom(room.name);
             console.log(`member [${roomMember.id}] has joined in room [${room.name}].`);
         };
 
