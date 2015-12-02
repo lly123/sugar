@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Room from '../components/common/room/Room';
+import RoomClient from '../components/web/RoomClient';
 import Table from '../components/web/table/Table';
 
 const table = ReactDOM.render(
@@ -8,4 +8,6 @@ const table = ReactDOM.render(
     document.getElementById("app")
 );
 
-Room.join('forAll', table);
+const room = RoomClient('http://localhost:8888');
+room.join('forAll', table);
+room.bridge('forAll', 'server');

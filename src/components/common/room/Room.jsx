@@ -3,7 +3,7 @@ import Events from 'events';
 
 const EventEmitter = Events.EventEmitter;
 
-class Room {
+export default class {
     constructor() {
         this._emitter = new EventEmitter();
         this._rooms = [];
@@ -76,6 +76,3 @@ class Room {
         console.log(roomName, message);
     }
 }
-
-const room = new Room();
-export {room as default}
