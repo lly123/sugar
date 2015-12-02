@@ -1,18 +1,18 @@
-const express = require('express');
-const app = express();
-const server = require('http').Server(app);
-const path = require('path');
-const logger = require('morgan');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-
+import Express from 'express';
+import Http from 'http';
+import Logger from 'morgan';
+import CookieParser from 'cookie-parser';
+import BodyParser from 'body-parser';
 import RoomServer from './components/server/RoomServer'
+
+const app = Express();
+const server = Http.Server(app);
 const roomServer = RoomServer(server);
 
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(cookieParser());
-app.use(express.static('./build/web'));
+app.use(Logger('dev'));
+app.use(BodyParser.json());
+app.use(CookieParser());
+app.use(Express.static('./build/web'));
 
 var TableService = {
     id: 'tableService',
@@ -29,5 +29,5 @@ app.use(function (req, res) {
     res.end('Not Found');
 });
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8888;
 server.listen(port);
