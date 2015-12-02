@@ -4,6 +4,7 @@ import Logger from 'morgan';
 import CookieParser from 'cookie-parser';
 import BodyParser from 'body-parser';
 import RoomServer from './components/server/RoomServer'
+import TableService from './server/TableService'
 
 const app = Express();
 const server = Http.Server(app);
@@ -14,14 +15,7 @@ app.use(BodyParser.json());
 app.use(CookieParser());
 app.use(Express.static('./build/web'));
 
-var TableService = {
-    id: 'tableService',
-    joinedRoom: function () {
-        console.log('LALALLA!');
-    }
-};
-
-roomServer.join("server", TableService);
+roomServer.join("server", new TableService('tableService'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res) {

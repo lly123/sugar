@@ -6,6 +6,8 @@ export class Table extends React.Component {
     constructor(props) {
         super(props);
         this.id = props.id;
+        this.type = 'table';
+
         this.state = {
             header: ['Title1', 'Title2', 'Title3'],
             rows: [
