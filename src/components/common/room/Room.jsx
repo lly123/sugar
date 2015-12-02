@@ -24,7 +24,7 @@ class Room {
              * Add room property to this member
              */
             member.room = this;
-            member.joinedRoom(room.name);
+            member.joinedRoom();
             console.log(`member [${roomMember.id}] has joined in room [${room.name}].`);
         };
 
@@ -66,14 +66,14 @@ class Room {
                 members: []
             };
             this._rooms.push(room);
-            this._emitter.on(room.name, this._onMessage);
+            this._emitter.on(room.name, message => this._onMessage(roomName, message));
             console.log(`room [${roomName}] has been added.`);
         }
         return room;
     }
 
-    _onMessage(message) {
-        console.log(message);
+    _onMessage(roomName, message) {
+        console.log(roomName, message);
     }
 }
 

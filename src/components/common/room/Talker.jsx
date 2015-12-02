@@ -1,8 +1,7 @@
 const Talker = {
-    joinedRoom(roomName) {
+    joinedRoom() {
         this.room.send(this, {
             from: this.id,
-            room: roomName,
             type: this.type,
             title: "OKOKOK!!!"
         });
