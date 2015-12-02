@@ -18,8 +18,11 @@ var jsx = function () {
             {
                 extensions: ['.jsx'],
                 bundleExternal: true,
+                //detectGlobals: false,
+                //insertGlobals: false,
                 debug: true
             })
+            .external(['socket.io', 'express', 'http', 'path', 'morgan', 'cookie-parser', 'body-parser'])
             .transform("babelify", {presets: ["es2015", "react"]})
             .bundle(function (err, res) {
                 if (err) {
@@ -84,3 +87,4 @@ gulp.task('webserver', ['html'], function () {
 });
 
 gulp.task('default', ['webserver', 'watch']);
+gulp.task('compile', ['html']);

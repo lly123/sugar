@@ -13,7 +13,7 @@ class Room {
     join(roomName, member) {
         const joinInRoom = function (roomMember, room) {
             if (_.any(roomMember.rooms, r => r.name === room.name)) {
-                console.debug(`member [${roomMember.id}] has already existed in room [${room.name}].`);
+                console.log(`member [${roomMember.id}] has already existed in room [${room.name}].`);
                 return;
             }
 
@@ -25,7 +25,7 @@ class Room {
              */
             member.room = this;
             member.joinedRoom();
-            console.debug(`member [${roomMember.id}] has joined in room [${room.name}].`);
+            console.log(`member [${roomMember.id}] has joined in room [${room.name}].`);
         };
 
         const room = this._findRoom(roomName);
@@ -53,7 +53,7 @@ class Room {
                 rooms: []
             };
             this._members.push(roomMember);
-            console.debug(`member [${member.id}] has been added.`);
+            console.log(`member [${member.id}] has been added.`);
         }
         return roomMember;
     }
@@ -67,7 +67,7 @@ class Room {
             };
             this._rooms.push(room);
             this._emitter.on(room.name, this._onMessage);
-            console.debug(`room [${roomName}] has been added.`);
+            console.log(`room [${roomName}] has been added.`);
         }
         return room;
     }
