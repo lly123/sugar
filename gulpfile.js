@@ -36,8 +36,8 @@ var jsx = function () {
     });
     return gulp.src('./src/**/*.jsx')
         .pipe(throughBrowserify)
-        .pipe($.jshint())
-        .pipe($.uglify())
+        //.pipe($.jshint())
+        //.pipe($.uglify())
         .pipe(gulp.dest('./build'));
 };
 

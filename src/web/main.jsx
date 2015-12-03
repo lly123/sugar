@@ -9,5 +9,5 @@ const table = ReactDOM.render(
 );
 
 const room = RoomClient('http://localhost:8888');
-room.join('forAll', table);
 room.bridge('forAll', 'server');
+room.join('forAll', table);
