@@ -10,36 +10,37 @@ export default class {
         this._members = [];
     }
 
-    join(roomName, member) {
-        const joinInRoom = function (roomMember, room) {
-            if (_.any(roomMember.rooms, r => r.name === room.name)) {
-                console.log(`Member [${roomMember.id}] has already existed in room [${room.name}].`);
+    join(roomName, memberInst) {
+        const joinInRoom = function (member, room) {
+            if (_.any(member.rooms, r => r.name === room.name)) {
+                console.log(`Member [${member.id}] has already existed in room [${room.name}].`);
                 return;
             }
 
-            room.members.push(roomMember);
-            roomMember.rooms.push(room);
+            room.members.push(member);
+            member.rooms.push(room);
 
             /**
              * Add room property to this member
              */
-            member.room = this;
-            member.joinedRoom();
-            console.log(`Member [${roomMember.id}] has joined in room [${room.name}].`);
+            memberInst.room = this;
+            memberInst._joinedRoom();
+
+            console.log(`Member [${member.id}] has joined in room [${room.name}].`);
         };
 
         const room = this._findRoom(roomName) || this._createRoom(roomName);
-        const roomMember = this._findMember(member.id) || this._createMember(member.id);
-        joinInRoom.call(this, roomMember, room);
+        const member = this._findMember(memberInst) || this._createMember(memberInst);
+        joinInRoom.call(this, member, room);
     }
 
-    send(member, message) {
-        const roomMember = this._findMember(member.id);
-        if (!roomMember) {
-            throw `Member [${member.id}] doesn't join in any room`;
+    send(memberInst, message) {
+        const member = this._findMember(memberInst);
+        if (!member) {
+            throw `Member [${memberInst.id}] doesn't join in any room`;
         }
-        _.each(roomMember.rooms, r => this._emitter.emit(r.name, message));
-        return roomMember;
+        _.each(member.rooms, r => this._emitter.emit(r.name, message));
+        return member;
     }
 
     _send(roomNames, message) {
@@ -50,17 +51,18 @@ export default class {
         _.each(this.rooms, v => console.info(`room: ${v.name}`));
     }
 
-    _findMember(memberId) {
-        return _.find(this._members, m => m.id === memberId);
+    _findMember(memberInst) {
+        return _.find(this._members, m => m.id === memberInst.id);
     }
 
-    _createMember(memberId) {
+    _createMember(memberInst) {
         var member = {
-            id: memberId,
+            id: memberInst.id,
+            inst: memberInst,
             rooms: []
         };
         this._members.push(member);
-        console.log(`Member [${memberId}] has been added.`);
+        console.log(`Member [${memberInst.id}] has been added.`);
         return member;
     }
 
@@ -75,12 +77,17 @@ export default class {
             linkedRooms: []
         };
         this._rooms.push(room);
-        this._emitter.on(roomName, message => this._onMessage(roomName, message));
+
+        this._emitter.on(roomName, message => {
+            console.log(`In room [${room.name}] got message:`, message);
+            _.each(room.members, m => {
+                if (message.from !== m.id) {
+                    m.inst._onMessage(room, message)
+                }
+            });
+        });
+
         console.log(`Room [${roomName}] has been added.`);
         return room;
-    }
-
-    _onMessage(roomName, message) {
-        console.log(`In room [${roomName}] got message:`, message);
     }
 }

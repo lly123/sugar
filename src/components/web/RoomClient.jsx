@@ -15,8 +15,8 @@ export class RoomClient extends Room {
         }
     }
 
-    send(member, message) {
-        const roomMember = super.send(member, message);
+    send(memberInst, message) {
+        const roomMember = super.send(memberInst, message);
         _.each(roomMember.rooms, r => {
             if (!_.isEmpty(r.linkedRooms)) {
                 this._connection.emit('message', {
