@@ -3,8 +3,8 @@ import Talker from '../common/room/Talker'
 
 export class Service {
     constructor(id) {
-        this.id = id;
-        this.type = 'service'
+        this._s_id = id;
+        this._s_type = 'service'
     }
 }
 

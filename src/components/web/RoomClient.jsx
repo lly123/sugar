@@ -6,6 +6,9 @@ export class RoomClient extends Room {
     constructor(url) {
         super();
         this._connection = Socket(url);
+        this._connection.on('message', remoteMsg => {
+            console.log('%%%%%########@@@@@@ ', remoteMsg);
+        });
     }
 
     bridge(localRoomName, remoteRoomName) {

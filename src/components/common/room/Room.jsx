@@ -23,7 +23,7 @@ export default class {
             /**
              * Add room property to this member
              */
-            memberInst.room = this;
+            memberInst._s_room = this;
             memberInst._joinedRoom();
 
             console.log(`Member [${member.id}] has joined in room [${room.name}].`);
@@ -37,7 +37,7 @@ export default class {
     send(memberInst, message) {
         const member = this._findMember(memberInst);
         if (!member) {
-            throw `Member [${memberInst.id}] doesn't join in any room`;
+            throw `Member [${memberInst._s_id}] doesn't join in any room`
         }
         _.each(member.rooms, r => this._emitter.emit(r.name, message));
         return member;
@@ -52,17 +52,17 @@ export default class {
     }
 
     _findMember(memberInst) {
-        return _.find(this._members, m => m.id === memberInst.id);
+        return _.find(this._members, m => m.id === memberInst._s_id);
     }
 
     _createMember(memberInst) {
         var member = {
-            id: memberInst.id,
+            id: memberInst._s_id,
             inst: memberInst,
             rooms: []
         };
         this._members.push(member);
-        console.log(`Member [${memberInst.id}] has been added.`);
+        console.log(`Member [${memberInst._s_id}] has been added.`);
         return member;
     }
 

@@ -5,8 +5,8 @@ import Talker from '../../common/room/Talker'
 export class Table extends React.Component {
     constructor(props) {
         super(props);
-        this.id = props.id;
-        this.type = 'table';
+        this._s_id = props.id;
+        this._s_type = 'table';
 
         this.state = {
             header: ['Title1', 'Title2', 'Title3'],
@@ -15,6 +15,12 @@ export class Table extends React.Component {
                 ['Row 2-1', 'Row 2-2', 'Row 2-3']
             ]
         };
+
+        this.call(this._init).from("tableService").done();
+    }
+
+    _init(message) {
+        console.log('----****222 ', message);
     }
 
     render() {
