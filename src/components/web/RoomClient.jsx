@@ -7,6 +7,7 @@ export class RoomClient extends Room {
         super();
         this._connection = Socket(url);
         this._connection.on('message', remoteMsg => {
+            _.each(remoteMsg.rooms, r => this._emitter.emit(r, remoteMsg.message));
             console.log('%%%%%########@@@@@@ ', remoteMsg);
         });
     }
@@ -19,14 +20,16 @@ export class RoomClient extends Room {
     }
 
     send(memberInst, message) {
-        const roomMember = super.send(memberInst, message);
-        _.each(roomMember.rooms, r => {
-            if (!_.isEmpty(r.linkedRooms)) {
-                this._connection.emit('message', {
-                    rooms: r.linkedRooms,
-                    message: message
-                });
-            }
+        super.send(memberInst, message, roomMember => {
+            _.each(roomMember.rooms, r => {
+                if (!_.isEmpty(r.linkedRooms)) {
+                    this._connection.emit('message', {
+                        remoteRoom: r.name,
+                        rooms: r.linkedRooms,
+                        message: message
+                    });
+                }
+            });
         });
     }
 }
