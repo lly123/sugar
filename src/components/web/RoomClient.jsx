@@ -7,29 +7,28 @@ export class RoomClient extends Room {
         super();
         this._connection = Socket(url);
         this._connection.on('message', remoteMsg => {
-            _.each(remoteMsg.rooms, r => this._emitter.emit(r, remoteMsg.message));
             console.log('%%%%%########@@@@@@ ', remoteMsg);
+            this.sendToRooms([remoteMsg.roomName], remoteMsg.message);
         });
     }
 
     bridge(localRoomName, remoteRoomName) {
         const room = this._findRoom(localRoomName) || this._createRoom(localRoomName);
-        if (!_.find(room.linkedRooms, r => r === remoteRoomName)) {
-            room.linkedRooms.push(remoteRoomName);
+        if (!_.find(room.remoteRoomNames, r => r === remoteRoomName)) {
+            room.remoteRoomNames.push(remoteRoomName);
         }
     }
 
     send(memberInst, message) {
-        super.send(memberInst, message, roomMember => {
-            _.each(roomMember.rooms, r => {
-                if (!_.isEmpty(r.linkedRooms)) {
-                    this._connection.emit('message', {
-                        remoteRoom: r.name,
-                        rooms: r.linkedRooms,
-                        message: message
-                    });
-                }
-            });
+        var roomMember = super.send(memberInst, message);
+        _.each(roomMember.rooms, r => {
+            if (!_.isEmpty(r.remoteRoomNames)) {
+                this._connection.emit('message', {
+                    originalRoomName: r.name,
+                    roomNames: r.remoteRoomNames,
+                    message: message
+                });
+            }
         });
     }
 }

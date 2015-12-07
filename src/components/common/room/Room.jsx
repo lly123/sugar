@@ -34,35 +34,17 @@ export default class {
         joinInRoom.call(this, member, room);
     }
 
-    send(memberInst, message, fn) {
+    send(memberInst, message) {
         const member = this._findMember(memberInst);
         if (!member) {
             throw `Member [${memberInst._s_id}] doesn't join in any room`
         }
-        _.each(member.rooms, r => this._emitter.emit(r.name, message));
-
-        if (fn) {
-            fn(member);
-        }
+        this.sendToRooms(_.map(member.rooms, r => r.name), message);
         return member;
     }
 
-    deliverRemoteMessage(socket, remoteMsg) {
-        _.each(remoteMsg.rooms, r => {
-            var room = this._findRoom(r);
-            if (room) {
-                var hasLinkedRoom = _.any(room.linkedRooms, r => r.name === remoteMsg.remoteRoom);
-                if (!hasLinkedRoom) {
-                    room.linkedRooms.push({
-                        name: remoteMsg.remoteRoom,
-                        connection: socket
-                    });
-
-                    console.log(`Room [${room.name}] add link room [${remoteMsg.remoteRoom}].`);
-                }
-                this._emitter.emit(room.name, remoteMsg.message)
-            }
-        });
+    sendToRooms(roomNames, message) {
+        _.each(roomNames, n => this._emitter.emit(n, message));
     }
 
     list() {
@@ -92,7 +74,7 @@ export default class {
         var room = {
             name: roomName,
             members: [],
-            linkedRooms: []
+            remoteRoomNames: []
         };
         this._rooms.push(room);
 

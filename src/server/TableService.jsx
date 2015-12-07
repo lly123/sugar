@@ -9,6 +9,6 @@ export default class extends Service {
 
     _tableJoinRoom(message) {
         console.log('----**** ', message);
-        this._say('LALALA!!!');
+        message.reply('LALALA!!!');
     }
 }
