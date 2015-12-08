@@ -1,18 +1,21 @@
 import _ from 'underscore';
 
-const JOIN_ROOM = 'JoinRoom';
-
 const Talker = {
-    _say(event) {
+    joinedRoom() {
         this._s_room.send(this, {
             from: this._s_id,
             type: this._s_type,
-            event: event
+            event: 'JoinRoom'
         });
     },
 
-    _joinedRoom() {
-        this._say(JOIN_ROOM);
+    reply(remoteMsg, event, data) {
+        remoteMsg._reply({
+            from: this._s_id,
+            type: this._s_type,
+            event: event,
+            data: data
+        });
     },
 
     _onMessage(room, message) {
@@ -60,9 +63,6 @@ const Talker = {
                 if (_.isEmpty(condition)) {
                     throw `Need to set conditions when call ${func.name}`
                 }
-
-                console.log('XXXXXX ', condition.event, condition.id, condition.type);
-
                 condition.owner._s_callbacks = condition.owner._s_callbacks || [];
                 condition.owner._s_callbacks.push({
                     condition: condition,

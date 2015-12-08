@@ -9,15 +9,11 @@ export class RoomServer extends Room {
         this.io.on('connection', socket => {
             console.log('Client has connected.');
             socket.on('message', remoteMsg => {
-                remoteMsg.message.reply = event => {
+                remoteMsg.message._reply = message => {
                     socket.emit('message', {
                         roomName: remoteMsg.originalRoomName,
-                        message: {
-                            from: this._s_id,
-                            type: this._s_type,
-                            event: event
-                        }
-                    });
+                        message: message
+                    })
                 };
                 this.sendToRooms(remoteMsg.roomNames, remoteMsg.message);
             });

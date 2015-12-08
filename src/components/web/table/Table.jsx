@@ -9,18 +9,15 @@ export class Table extends React.Component {
         this._s_type = 'table';
 
         this.state = {
-            header: ['Title1', 'Title2', 'Title3'],
-            rows: [
-                ['Row 1-1', 'Row 1-2', 'Row 1-3'],
-                ['Row 2-1', 'Row 2-2', 'Row 2-3']
-            ]
+            header: [],
+            rows: []
         };
 
-        this.call(this._init).from("tableService").done();
+        this.call(this._init).on('InitData').from("tableService").done();
     }
 
     _init(message) {
-        console.log('----****222 ', message);
+        this.setState(message.data);
     }
 
     render() {

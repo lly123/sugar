@@ -7,7 +7,6 @@ export class RoomClient extends Room {
         super();
         this._connection = Socket(url);
         this._connection.on('message', remoteMsg => {
-            console.log('%%%%%########@@@@@@ ', remoteMsg);
             this.sendToRooms([remoteMsg.roomName], remoteMsg.message);
         });
     }

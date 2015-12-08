@@ -24,7 +24,7 @@ export default class {
              * Add room property to this member
              */
             memberInst._s_room = this;
-            memberInst._joinedRoom();
+            memberInst.joinedRoom();
 
             console.log(`Member [${member.id}] has joined in room [${room.name}].`);
         };
@@ -45,10 +45,6 @@ export default class {
 
     sendToRooms(roomNames, message) {
         _.each(roomNames, n => this._emitter.emit(n, message));
-    }
-
-    list() {
-        _.each(this.rooms, v => console.info(`room: ${v.name}`));
     }
 
     _findMember(memberInst) {
