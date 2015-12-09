@@ -71,9 +71,11 @@ gulp.task('assets', ['stylus', 'jsx', 'js']);
 
 gulp.task('html', ['assets'], html);
 
+gulp.task('stylus-watch', stylus);
 gulp.task('jsx-watch', jsx);
 gulp.task('js-watch', js);
 gulp.task('watch', function () {
+    gulp.watch('./src/web/css/**/*.styl', ['stylus-watch']);
     gulp.watch('./src/**/*.jsx', ['jsx-watch']);
     gulp.watch('./src/**/*.js', ['js-watch']);
 });
