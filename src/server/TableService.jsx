@@ -12,7 +12,36 @@ export default class extends Service {
             header: ['Title1', 'Title2', 'Title3'],
             rows: [
                 ['Row 1-1', 'Row 1-2', 'Row 1-3'],
-                ['Row 2-1', 'Row 2-2', 'Row 2-3']
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 2-1', 'Row 2-2', 'Row 2-3'],
+                ['Row 20-1', 'Row 20-2', 'Row 20-3']
             ]
         });
     }

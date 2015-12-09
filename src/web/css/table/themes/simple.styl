@@ -2,8 +2,13 @@
   border-collapse collapse
   //border: 1px solid #0b97c4
 
-  .header {
+  thead, tbody {
+    display: block;
+  }
+
+  thead {
     th {
+      box-sizing border-box
       padding 6px
       border-bottom 1px solid #0b97c4
       &:not(:last-of-type) {
@@ -12,8 +17,12 @@
     }
   }
 
-  .row {
+  tbody {
+    height: 100px;
+    overflow: auto;
+
     td {
+      box-sizing border-box
       padding 6px
       border-bottom 1px solid lightgray
       &:not(:last-of-type) {

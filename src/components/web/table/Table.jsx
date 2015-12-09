@@ -1,3 +1,4 @@
+import _ from 'underscore';
 import React from 'react';
 import ReactMixin from 'react-mixin';
 import TableTalker from '../../common/room/table/TableTalker'
@@ -11,7 +12,22 @@ export class Table extends React.Component {
             header: [],
             rows: []
         };
+    }
+
+    componentDidMount() {
         this.listen();
+    }
+
+    _adjustHeaderWidth() {
+        var titles = this.refs.header.querySelectorAll('th');
+        var cellsOfFirstRow = this.refs.body.querySelectorAll('tr:first-of-type > td');
+        _.each(cellsOfFirstRow, function (v, i) {
+            titles[i].width = v.getBoundingClientRect().width;
+        });
+    }
+
+    componentDidUpdate() {
+        this._adjustHeaderWidth();
     }
 
     render() {
@@ -27,10 +43,14 @@ export class Table extends React.Component {
         });
         return (
             <table id={this.props.id} className={this.props.theme + "-theme"}>
-                <tr className="header">
+                <thead ref="header">
+                <tr>
                     {tableHeader}
                 </tr>
+                </thead>
+                <tbody ref="body">
                 {tableBody}
+                </tbody>
             </table>
         );
     }
