@@ -4,7 +4,7 @@ import Service from '../components/server/Service'
 export default class extends Service {
     constructor(id) {
         super(id);
-        this.call(this._tableJoinRoom).on('JoinRoom').from("t01").done();
+        this.from("t01").on('JoinRoom').call(this._tableJoinRoom);
     }
 
     _tableJoinRoom(message) {

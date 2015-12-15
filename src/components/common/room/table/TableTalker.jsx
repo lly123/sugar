@@ -3,7 +3,7 @@ import Talker from '../Talker'
 
 var TableTalker = {
     listen() {
-        this.call(this._init).on('InitData').done();
+        this.on('InitData').call(this._init);
     },
 
     _init(message) {

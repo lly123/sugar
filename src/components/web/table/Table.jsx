@@ -12,6 +12,7 @@ export class Table extends React.Component {
             header: [],
             rows: []
         };
+        this.splitters = [];
     }
 
     componentDidMount() {
@@ -21,26 +22,54 @@ export class Table extends React.Component {
     _adjustHeaderWidth() {
         var titles = this.refs.header.querySelectorAll('th');
         var cellsOfFirstRow = this.refs.body.querySelectorAll('tr:first-of-type > td');
-        _.each(cellsOfFirstRow, function (v, i) {
-            titles[i].width = v.getBoundingClientRect().width;
-        });
+
+        /**
+         * Reset title cells' widths
+         */
+        _.each(cellsOfFirstRow, (v, i) => titles[i].width = v.getBoundingClientRect().width);
+
+        /**
+         * Calculate splitters' left and right positions
+         */
+        for (var i = 1; i < titles.length; i++) {
+            this.splitters[i - 1] = {
+                left: titles[i - 1].offsetLeft + titles[i - 1].clientLeft + titles[i - 1].clientWidth,
+                right: titles[i].offsetLeft + titles[i].clientLeft
+            }
+        }
     }
+
 
     componentDidUpdate() {
         this._adjustHeaderWidth();
     }
 
+    onMouseMoveHeaderCell(e) {
+        const bounds = e.target.getBoundingClientRect();
+        const x = e.clientX - bounds.left;
+        const leftBound = e.target.clientLeft;
+        const rightBound = e.target.clientLeft + e.target.clientWidth;
+        e.target.style.cursor = x < leftBound || x > rightBound ? 'col-resize' : 'auto';
+    }
+
+    onMouseMoveBodyCell(e) {
+    }
+
     render() {
-        const tableHeader = this.state.header.map(function (v, i) {
-            return (<th key={"th" + i}>{v}</th>)
+        const tableHeader = this.state.header.map((v, i) => {
+            return (<th key={"th" + i} onMouseMove={this.onMouseMoveHeaderCell}>{v}</th>)
         });
-        const tableBody = this.state.rows.map(function (v, i) {
+
+        const tableBody = this.state.rows.map((v, i) => {
             return (
                 <tr key={"tr" + i} className="row">
-                    {v.map(function(o, i) {return (<td key={"td" + i}>{o}</td>)})}
+                    {v.map((o, i) => {
+                        return (<td key={"td" + i} onMouseMove={this.onMouseMoveBodyCell}>{o}</td>)
+                        })}
                 </tr>
             )
         });
+
         return (
             <table id={this.props.id} className={this.props.theme + "-theme"}>
                 <thead ref="header">

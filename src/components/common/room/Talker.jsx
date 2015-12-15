@@ -36,43 +36,64 @@ const Talker = {
 
             v.func.call(v.condition.owner, message);
         }
-    },
-
-    call(func) {
-        var condition = {
-            owner: this
-        };
-
-        const builder = {
-            on(event) {
-                condition.event = event;
-                return builder;
-            },
-
-            from(id) {
-                condition.id = id;
-                return builder;
-            },
-
-            ofType(type) {
-                condition.type = type;
-                return builder;
-            },
-
-            done() {
-                if (_.isEmpty(condition)) {
-                    throw `Need to set conditions when call ${func.name}`
-                }
-                condition.owner._s_callbacks = condition.owner._s_callbacks || [];
-                condition.owner._s_callbacks.push({
-                    condition: condition,
-                    func: func
-                });
-            }
-        };
-
-        return builder;
     }
 };
 
+var Caller = {
+    on(event) {
+        if (this.condition) {
+            this.condition.event = event;
+            return this;
+        } else {
+            var ret = _.clone(this.self);
+            ret.condition = {
+                owner: this,
+                event: event
+            };
+            return ret;
+        }
+    },
+
+    from(id) {
+        if (this.condition) {
+            this.condition.id = id;
+            return this;
+        } else {
+            var ret = _.clone(this.self);
+            ret.condition = {
+                owner: this,
+                id: id
+            };
+            return ret;
+        }
+    },
+
+    ofType(type) {
+        if (this.condition) {
+            this.condition.type = type;
+            return this;
+        } else {
+            var ret = _.clone(this.self);
+            ret.condition = {
+                owner: this,
+                type: type
+            };
+            return ret;
+        }
+    },
+
+    call(func) {
+        if (_.isEmpty(this.condition)) {
+            throw `Need to set conditions when call ${func.name}`
+        }
+        this.condition.owner._s_callbacks = this.condition.owner._s_callbacks || [];
+        this.condition.owner._s_callbacks.push({
+            condition: this.condition,
+            func: func
+        });
+    }
+};
+Caller.self = Caller;
+
+_.extend(Talker, Caller);
 export {Talker as default};
