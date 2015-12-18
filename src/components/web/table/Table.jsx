@@ -12,7 +12,8 @@ export class Table extends React.Component {
             header: [],
             rows: []
         };
-        this.splitters = [];
+        this.resizeObjects = null;
+        this.isMouseDown = false;
     }
 
     componentDidMount() {
@@ -27,45 +28,105 @@ export class Table extends React.Component {
          * Reset title cells' widths
          */
         _.each(cellsOfFirstRow, (v, i) => titles[i].width = v.getBoundingClientRect().width);
-
-        /**
-         * Calculate splitters' left and right positions
-         */
-        for (var i = 1; i < titles.length; i++) {
-            this.splitters[i - 1] = {
-                left: titles[i - 1].offsetLeft + titles[i - 1].clientLeft + titles[i - 1].clientWidth,
-                right: titles[i].offsetLeft + titles[i].clientLeft
-            }
-        }
     }
 
+    _changeCursor(e) {
+        function setResizeObjects(left, leftDiv, right, rightDiv) {
+            this.resizeObjects = {
+                left: left, leftDiv: leftDiv,
+                right: right, rightDiv: rightDiv
+            };
+        }
+
+        const target = e.target;
+        const x = e.clientX - target.getBoundingClientRect().left;
+
+        if (this.isMouseDown) {
+            target.style.cursor = 'col-resize';
+            const offset = e.clientX - this.resizeObjects.clickX;
+            const newWidths = [
+                this.resizeObjects.widths[0] + offset,
+                this.resizeObjects.widths[1] + offset,
+                this.resizeObjects.widths[2] - offset,
+                this.resizeObjects.widths[3] - offset
+            ];
+
+            this.resizeObjects.left.width = newWidths[0];
+            this.resizeObjects.leftDiv.style.width = newWidths[1] + 'px';
+            this.resizeObjects.right.width = newWidths[2];
+            this.resizeObjects.rightDiv.style.width = newWidths[3] + 'px';
+        } else {
+            const leftBound = target.clientLeft;
+            const rightBound = target.clientLeft + target.clientWidth;
+
+            if (x < leftBound) {
+                setResizeObjects.bind(this)(
+                    e.target.previousSibling, e.target.previousSibling.querySelector('div'),
+                    e.target, e.target.querySelector('div')
+                );
+            } else if (x > rightBound) {
+                setResizeObjects.bind(this)(
+                    e.target, e.target.querySelector('div'),
+                    e.target.nextSibling, e.target.nextSibling.querySelector('div')
+                );
+            } else {
+                this.resizeObjects = null;
+            }
+            target.style.cursor = this.resizeObjects ? 'col-resize' : 'auto';
+        }
+    }
 
     componentDidUpdate() {
         this._adjustHeaderWidth();
     }
 
     onMouseMoveHeaderCell(e) {
-        const bounds = e.target.getBoundingClientRect();
-        const x = e.clientX - bounds.left;
-        const leftBound = e.target.clientLeft;
-        const rightBound = e.target.clientLeft + e.target.clientWidth;
-        e.target.style.cursor = x < leftBound || x > rightBound ? 'col-resize' : 'auto';
+        this._changeCursor(e);
     }
 
     onMouseMoveBodyCell(e) {
     }
 
+    onMouseDown(e) {
+        if (this.resizeObjects) {
+            this.isMouseDown = true;
+            _.extend(this.resizeObjects, {
+                clickX: e.clientX,
+                widths: [
+                    parseInt(this.resizeObjects.left.width),
+                    parseInt(this.resizeObjects.leftDiv.offsetWidth),
+                    parseInt(this.resizeObjects.right.width),
+                    parseInt(this.resizeObjects.rightDiv.offsetWidth)
+                ]
+            });
+        }
+    }
+
+    onMouseUp(e) {
+        this.isMouseDown = false;
+    }
+
     render() {
         const tableHeader = this.state.header.map((v, i) => {
-            return (<th key={"th" + i} onMouseMove={this.onMouseMoveHeaderCell}>{v}</th>)
+            return (<th key={"th" + i}
+                        onMouseMove={this.onMouseMoveHeaderCell.bind(this)}
+                        onMouseUp={this.onMouseUp.bind(this)}
+                        onMouseDown={this.onMouseDown.bind(this)}>
+                <div key={"th-div" + i}>{v}</div>
+            </th>)
         });
 
         const tableBody = this.state.rows.map((v, i) => {
             return (
                 <tr key={"tr" + i} className="row">
                     {v.map((o, i) => {
-                        return (<td key={"td" + i} onMouseMove={this.onMouseMoveBodyCell}>{o}</td>)
-                        })}
+                        return (<td key={"td" + i}
+                                    onMouseMove={this.onMouseMoveBodyCell.bind(this)}
+                                    onMouseUp={this.onMouseUp.bind(this)}
+                                    onMouseDown={this.onMouseDown.bind(this)}>
+                            <div key={"td-div" + i}>{o}</div>
+                        </td>)
+                    })}
                 </tr>
             )
         });

@@ -1,6 +1,8 @@
 .simple-theme {
   border-collapse collapse
-  //border: 1px solid #0b97c4
+  border: 1px solid #0b97c4
+  table-layout fixed
+  white-space nowrap
 
   thead, tbody {
     display: block;
@@ -12,7 +14,12 @@
       padding 6px
       border-bottom 1px solid #0b97c4
       &:not(:last-of-type) {
-        border-right 1px solid #0b97c4
+        border-right 3px solid #0b97c4
+      }
+
+      & > div {
+        box-sizing border-box
+        overflow hidden
       }
     }
   }
@@ -26,7 +33,12 @@
       padding 6px
       border-bottom 1px solid lightgray
       &:not(:last-of-type) {
-        border-right 1px solid #0b97c4
+        border-right 3px solid #0b97c4
+      }
+
+      & > div {
+        box-sizing border-box
+        overflow hidden
       }
     }
   }
