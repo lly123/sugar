@@ -30,19 +30,27 @@ export class Table extends React.Component {
         _.each(cellsOfFirstRow, (v, i) => titles[i].width = v.getBoundingClientRect().width);
     }
 
-    _changeCursor(e) {
-        function setResizeObjects(left, leftDiv, right, rightDiv) {
-            this.resizeObjects = {
-                left: left, leftDiv: leftDiv,
-                right: right, rightDiv: rightDiv
+    _changeCursor(i, e) {
+        function getColumn(i) {
+            return {
+                header: this.refs.header.querySelector(`tr > th:nth-child(${i})`),
+                headerDiv: this.refs.header.querySelector(`tr > th:nth-child(${i}) > div`),
+                cells: this.refs.body.querySelectorAll(`tr > td:nth-child(${i})`),
+                cellDivs: this.refs.body.querySelectorAll(`tr > td:nth-child(${i}) > div`)
             };
+        }
+
+        function changeColumnWidth(o, w1, w2) {
+            o.header.width = w1;
+            o.headerDiv.style.width = w2 + 'px';
+            _.each(o.cells, v => v.width = w1);
+            _.each(o.cellDivs, v => v.style.width = w2 + 'px');
         }
 
         const target = e.target;
         const x = e.clientX - target.getBoundingClientRect().left;
 
         if (this.isMouseDown) {
-            target.style.cursor = 'col-resize';
             const offset = e.clientX - this.resizeObjects.clickX;
             const newWidths = [
                 this.resizeObjects.widths[0] + offset,
@@ -51,28 +59,27 @@ export class Table extends React.Component {
                 this.resizeObjects.widths[3] - offset
             ];
 
-            this.resizeObjects.left.width = newWidths[0];
-            this.resizeObjects.leftDiv.style.width = newWidths[1] + 'px';
-            this.resizeObjects.right.width = newWidths[2];
-            this.resizeObjects.rightDiv.style.width = newWidths[3] + 'px';
+            changeColumnWidth(this.resizeObjects.left, newWidths[0], newWidths[1]);
+            changeColumnWidth(this.resizeObjects.right, newWidths[2], newWidths[3]);
+            target.style.cursor = 'col-resize';
         } else {
             const leftBound = target.clientLeft;
             const rightBound = target.clientLeft + target.clientWidth;
 
             if (x < leftBound) {
-                setResizeObjects.bind(this)(
-                    e.target.previousSibling, e.target.previousSibling.querySelector('div'),
-                    e.target, e.target.querySelector('div')
-                );
+                this.resizeObjects = {
+                    left: getColumn.call(this, i - 1),
+                    right: getColumn.call(this, i)
+                }
             } else if (x > rightBound) {
-                setResizeObjects.bind(this)(
-                    e.target, e.target.querySelector('div'),
-                    e.target.nextSibling, e.target.nextSibling.querySelector('div')
-                );
+                this.resizeObjects = {
+                    left: getColumn.call(this, i),
+                    right: getColumn.call(this, i + 1)
+                }
             } else {
                 this.resizeObjects = null;
             }
-            target.style.cursor = this.resizeObjects ? 'col-resize' : 'auto';
+            target.style.cursor = this.resizeObjects ? 'col-resize' : 'default';
         }
     }
 
@@ -80,8 +87,8 @@ export class Table extends React.Component {
         this._adjustHeaderWidth();
     }
 
-    onMouseMoveHeaderCell(e) {
-        this._changeCursor(e);
+    onMouseMoveHeaderCell(i, e) {
+        this._changeCursor(i, e);
     }
 
     onMouseMoveBodyCell(e) {
@@ -89,14 +96,16 @@ export class Table extends React.Component {
 
     onMouseDown(e) {
         if (this.resizeObjects) {
+            console.log('>>> ', this.resizeObjects);
+
             this.isMouseDown = true;
             _.extend(this.resizeObjects, {
                 clickX: e.clientX,
                 widths: [
-                    parseInt(this.resizeObjects.left.width),
-                    parseInt(this.resizeObjects.leftDiv.offsetWidth),
-                    parseInt(this.resizeObjects.right.width),
-                    parseInt(this.resizeObjects.rightDiv.offsetWidth)
+                    parseInt(this.resizeObjects.left.header.width),
+                    parseInt(this.resizeObjects.left.headerDiv.offsetWidth),
+                    parseInt(this.resizeObjects.right.header.width),
+                    parseInt(this.resizeObjects.right.headerDiv.offsetWidth)
                 ]
             });
         }
@@ -109,7 +118,7 @@ export class Table extends React.Component {
     render() {
         const tableHeader = this.state.header.map((v, i) => {
             return (<th key={"th" + i}
-                        onMouseMove={this.onMouseMoveHeaderCell.bind(this)}
+                        onMouseMove={this.onMouseMoveHeaderCell.bind(this, i + 1)}
                         onMouseUp={this.onMouseUp.bind(this)}
                         onMouseDown={this.onMouseDown.bind(this)}>
                 <div key={"th-div" + i}>{v}</div>
