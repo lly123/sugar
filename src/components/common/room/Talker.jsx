@@ -2,11 +2,21 @@ import _ from 'underscore';
 
 const Talker = {
     joinedRoom() {
-        this._s_room.send(this, {
+        this.say('JoinRoom');
+    },
+
+    say(event, data = null) {
+        var message = {
             from: this._s_id,
             type: this._s_type,
-            event: 'JoinRoom'
-        });
+            event: event
+        };
+
+        if (data) {
+            message.data = data;
+        }
+
+        this._s_room.send(this, message);
     },
 
     reply(remoteMsg, event, data) {
