@@ -1,5 +1,5 @@
-import ReactMixin from 'react-mixin';
-import Talker from '../common/room/Talker'
+import ReactMixin from "react-mixin";
+import Talker from "../room/Talker";
 
 export class Service {
     constructor(id) {

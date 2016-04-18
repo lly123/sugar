@@ -1,6 +1,6 @@
-import _ from 'underscore';
-import Socket from 'socket.io-client'
-import Room from '../common/room/Room';
+import _ from "underscore";
+import Socket from "socket.io-client";
+import Room from "../room/Room";
 
 export class RoomClient extends Room {
     constructor(url) {

@@ -1,9 +1,9 @@
-import _ from 'underscore';
-import React from 'react';
-import ReactMixin from 'react-mixin';
-import TableTalker from '../../common/room/table/TableTalker'
-import TableResizer from './TableResizer'
-import TableScroller from './TableScroller'
+import _ from "underscore";
+import React from "react";
+import ReactMixin from "react-mixin";
+import TableTalker from "./TableTalker";
+import TableResizer from "./TableResizer";
+import TableScroller from "./TableScroller";
 
 export class Table extends React.Component {
     constructor(props) {

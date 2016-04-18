@@ -1,5 +1,5 @@
-import _ from 'underscore';
-import Events from 'events';
+import _ from "underscore";
+import Events from "events";
 
 const EventEmitter = Events.EventEmitter;
 
@@ -11,27 +11,9 @@ export default class {
     }
 
     join(roomName, memberInst) {
-        const joinInRoom = function (member, room) {
-            if (_.any(member.rooms, r => r.name === room.name)) {
-                console.log(`Member [${member.id}] has already existed in room [${room.name}].`);
-                return;
-            }
-
-            room.members.push(member);
-            member.rooms.push(room);
-
-            /**
-             * Add room property to this member
-             */
-            memberInst._s_room = this;
-            memberInst.joinedRoom();
-
-            console.log(`Member [${member.id}] has joined in room [${room.name}].`);
-        };
-
         const room = this._findRoom(roomName) || this._createRoom(roomName);
         const member = this._findMember(memberInst) || this._createMember(memberInst);
-        joinInRoom.call(this, member, room);
+        this._joinInRoom(member, room, memberInst);
     }
 
     send(memberInst, message) {
@@ -45,6 +27,24 @@ export default class {
 
     sendToRooms(roomNames, message) {
         _.each(roomNames, n => this._emitter.emit(n, message));
+    }
+
+    _joinInRoom(member, room, memberInst) {
+        if (_.any(member.rooms, r => r.name === room.name)) {
+            console.log(`Member [${member.id}] has already existed in room [${room.name}].`);
+            return;
+        }
+
+        room.members.push(member);
+        member.rooms.push(room);
+
+        /**
+         * Add room property to this member
+         */
+        memberInst._s_room = this;
+        memberInst.joinedRoom();
+
+        console.log(`Member [${member.id}] has joined in room [${room.name}].`);
     }
 
     _findMember(memberInst) {

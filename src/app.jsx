@@ -1,10 +1,10 @@
-import Express from 'express';
-import Http from 'http';
-import Logger from 'morgan';
-import CookieParser from 'cookie-parser';
-import BodyParser from 'body-parser';
-import RoomServer from './components/server/RoomServer'
-import TableService from './server/TableService'
+import Express from "express";
+import Http from "http";
+import Logger from "morgan";
+import CookieParser from "cookie-parser";
+import BodyParser from "body-parser";
+import RoomServer from "./components/sugar/server/RoomServer";
+import TableService from "./server/TableService";
 
 const app = Express();
 const server = Http.Server(app);

@@ -1,5 +1,5 @@
-import _ from 'underscore';
-import Talker from '../Talker'
+import _ from "underscore";
+import Talker from "../../sugar/room/Talker";
 
 var TableTalker = {
     listen() {

@@ -1,5 +1,4 @@
-import ReactMixin from 'react-mixin';
-import Service from '../components/server/Service'
+import Service from "../components/sugar/server/Service";
 
 export default class extends Service {
     constructor(id) {
