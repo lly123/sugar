@@ -1,12 +1,12 @@
-import ReactMixin from "react-mixin";
+import _ from "underscore";
 import Talker from "../room/Talker";
 
-export class Service {
+class Service {
     constructor(id) {
         this._s_id = id;
         this._s_type = 'service'
     }
 }
 
-ReactMixin(Service.prototype, Talker);
+_.extend(Service.prototype, Talker);
 export {Service as default}

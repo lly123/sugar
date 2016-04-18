@@ -1,6 +1,5 @@
 import _ from "underscore";
 import React from "react";
-import ReactMixin from "react-mixin";
 import TableTalker from "./TableTalker";
 import TableResizer from "./TableResizer";
 import TableScroller from "./TableScroller";
@@ -103,7 +102,7 @@ export class Table extends React.Component {
     }
 }
 
-ReactMixin(Table.prototype, TableTalker);
-ReactMixin(Table.prototype, TableResizer);
-ReactMixin(Table.prototype, TableScroller);
+_.extend(Table.prototype, TableTalker);
+_.extend(Table.prototype, TableResizer);
+_.extend(Table.prototype, TableScroller);
 export {Table as default}
