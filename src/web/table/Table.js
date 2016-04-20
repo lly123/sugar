@@ -1,8 +1,8 @@
 import _ from "underscore";
 import React from "react";
-import TableTalker from "./TableTalker";
-import TableResizer from "./TableResizer";
-import TableScroller from "./TableScroller";
+import {TableTalker} from "./TableTalker";
+import {TableResizer} from "./TableResizer";
+import {TableScroller} from "./TableScroller";
 
 export class Table extends React.Component {
     constructor(props) {
@@ -105,4 +105,7 @@ export class Table extends React.Component {
 _.extend(Table.prototype, TableTalker);
 _.extend(Table.prototype, TableResizer);
 _.extend(Table.prototype, TableScroller);
-export {Table as default}
+
+export {
+    Table
+}

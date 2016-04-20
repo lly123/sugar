@@ -1,6 +1,6 @@
-import Service from "../components/sugar/server/Service";
+import {Service} from "../../../build/sugar";
 
-export default class extends Service {
+export class TableService extends Service {
     constructor(id) {
         super(id);
         this.from("t01").on('JoinRoom').call(this._tableJoinRoom);

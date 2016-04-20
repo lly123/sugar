@@ -3,7 +3,7 @@ import Events from "events";
 
 const EventEmitter = Events.EventEmitter;
 
-export default class {
+export class Room {
     constructor() {
         this._emitter = new EventEmitter();
         this._rooms = [];

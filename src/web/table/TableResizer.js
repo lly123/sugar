@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import _ from "underscore";
 
 var TableResizer = {
 
@@ -68,4 +68,6 @@ var TableResizer = {
     }
 };
 
-export {TableResizer as default};
+export {
+    TableResizer
+};

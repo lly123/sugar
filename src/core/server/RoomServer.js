@@ -1,5 +1,5 @@
 import Socket from "socket.io";
-import Room from "../room/Room";
+import {Room} from "../room/Room";
 
 export class RoomServer extends Room {
     constructor(server) {
@@ -18,8 +18,4 @@ export class RoomServer extends Room {
             });
         });
     }
-}
-
-export default function (server) {
-    return new RoomServer(server);
 }

@@ -3,19 +3,19 @@ import Http from "http";
 import Logger from "morgan";
 import CookieParser from "cookie-parser";
 import BodyParser from "body-parser";
-import RoomServer from "./components/sugar/server/RoomServer";
-import TableService from "./server/TableService";
+import {roomServer} from "../../../build/sugar";
+import {TableService} from "./TableService";
 
 const app = Express();
 const server = Http.Server(app);
-const roomServer = RoomServer(server);
+const room = roomServer(server);
 
 app.use(Logger('dev'));
 app.use(BodyParser.json());
 app.use(CookieParser());
 app.use(Express.static('./build/web'));
 
-roomServer.join("server", new TableService('tableService'));
+room.join("server", new TableService('tableService'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res) {

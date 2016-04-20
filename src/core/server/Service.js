@@ -1,5 +1,5 @@
 import _ from "underscore";
-import Talker from "../room/Talker";
+import {Talker} from "../room/Talker";
 
 class Service {
     constructor(id) {
@@ -9,4 +9,7 @@ class Service {
 }
 
 _.extend(Service.prototype, Talker);
-export {Service as default}
+
+export {
+    Service
+}

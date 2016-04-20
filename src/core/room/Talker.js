@@ -106,4 +106,7 @@ var Caller = {
 Caller.self = Caller;
 
 _.extend(Talker, Caller);
-export {Talker as default};
+
+export {
+    Talker
+};

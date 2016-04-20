@@ -1,6 +1,6 @@
 import _ from "underscore";
 import Socket from "socket.io-client";
-import Room from "../room/Room";
+import {Room} from "../room/Room";
 
 export class RoomClient extends Room {
     constructor(url) {
@@ -30,8 +30,4 @@ export class RoomClient extends Room {
             }
         });
     }
-}
-
-export default function (url) {
-    return new RoomClient(url);
 }

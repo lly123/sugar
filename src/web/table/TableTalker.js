@@ -1,5 +1,5 @@
 import _ from "underscore";
-import Talker from "../../sugar/room/Talker";
+import {Talker} from "../../core/room/Talker";
 
 var TableTalker = {
     listen() {
@@ -12,4 +12,7 @@ var TableTalker = {
 };
 
 _.extend(TableTalker, Talker);
-export {TableTalker as default};
+
+export {
+    TableTalker
+};

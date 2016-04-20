@@ -1,5 +1,4 @@
 var TableScroller = {
-
     registerScrollEvent() {
         this.refs.body.addEventListener('scroll', this.handleScroll.bind(this));
     },
@@ -16,4 +15,6 @@ var TableScroller = {
     }
 };
 
-export {TableScroller as default};
+export {
+    TableScroller
+};
