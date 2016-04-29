@@ -6,84 +6,80 @@ const EventEmitter = Events.EventEmitter;
 export class Room {
     constructor() {
         this._emitter = new EventEmitter();
-        this._rooms = [];
+        this._groups = [];
         this._members = [];
     }
 
-    join(roomName, memberInst) {
-        const room = this._findRoom(roomName) || this._createRoom(roomName);
-        const member = this._findMember(memberInst) || this._createMember(memberInst);
-        this._joinInRoom(member, room, memberInst);
+    join(groupName, memberInst) {
+        const group = _.find(this._groups, g => g.name === groupName) || this._createGroup(groupName);
+        const member = _.find(this._members, m => m.id === memberInst._s_id) || this._createMember(memberInst);
+        this._joinGroup(member, group);
     }
 
     send(memberInst, message) {
-        const member = this._findMember(memberInst);
-        if (!member) {
-            throw `Member [${memberInst._s_id}] doesn't join in any room`
-        }
-        this.sendToRooms(_.map(member.rooms, r => r.name), message);
+        const member = _.find(this._members, m => m.id === memberInst._s_id);
+        this.sendToRooms(_.map(member.groups, g => g.name), message);
         return member;
     }
 
-    sendToRooms(roomNames, message) {
-        _.each(roomNames, n => this._emitter.emit(n, message));
+    sendToRooms(groupNames, message) {
+        _.each(groupNames, n => this._emitter.emit(n, message));
     }
 
-    _joinInRoom(member, room, memberInst) {
-        if (_.any(member.rooms, r => r.name === room.name)) {
-            console.log(`Member [${member.id}] has already existed in room [${room.name}].`);
-            return;
+    _joinGroup(member, group) {
+        if (_.any(member.groups, g => g.name === group.name)) {
+            throw `Member [${member.id}] has already existed in group [${group.name}].`;
         }
 
-        room.members.push(member);
-        member.rooms.push(room);
+        group.members.push(member);
+        member.groups.push(group);
 
-        /**
-         * Add room property to this member
-         */
-        memberInst._s_room = this;
-        memberInst.joinedRoom();
+        member.inst.say('joined');
 
-        console.log(`Member [${member.id}] has joined in room [${room.name}].`);
-    }
-
-    _findMember(memberInst) {
-        return _.find(this._members, m => m.id === memberInst._s_id);
+        console.log(`Member [${member.id}] joined in group [${group.name}].`);
     }
 
     _createMember(memberInst) {
         var member = {
             id: memberInst._s_id,
             inst: memberInst,
-            rooms: []
+            groups: []
         };
         this._members.push(member);
-        console.log(`Member [${memberInst._s_id}] has been added.`);
+
+        this._registerMember(member);
+
+        console.log(`Created member [${memberInst._s_id}].`);
         return member;
     }
 
-    _findRoom(roomName) {
-        return _.find(this._rooms, r => r.name === roomName);
+    _createGroup(groupName) {
+        var group = {
+            name: groupName,
+            members: [],
+            remoteGroupNames: []
+        };
+        this._groups.push(group);
+
+        this._registerGroup(group);
+
+        console.log(`Created group [${groupName}].`);
+        return group;
     }
 
-    _createRoom(roomName) {
-        var room = {
-            name: roomName,
-            members: [],
-            remoteRoomNames: []
-        };
-        this._rooms.push(room);
+    _registerMember(member) {
+        member.inst._s_room = this;
+    }
 
-        this._emitter.on(roomName, message => {
-            console.log(`In room [${room.name}] got message:`, message);
-            _.each(room.members, m => {
+    _registerGroup(group) {
+        this._emitter.on(group.name, message => {
+            console.log(`In group [${group.name}] got message:`, message);
+
+            _.each(group.members, m => {
                 if (message.from !== m.id) {
-                    m.inst._onMessage(room, message)
+                    m.inst._onMessage(group, message)
                 }
             });
         });
-
-        console.log(`Room [${roomName}] has been added.`);
-        return room;
     }
 }

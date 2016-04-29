@@ -8,7 +8,6 @@ export class Table extends React.Component {
     constructor(props) {
         super(props);
         this._s_id = props.id;
-        this._s_type = 'table';
         this.state = {
             header: [],
             rows: []

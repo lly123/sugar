@@ -1,109 +1,68 @@
 import _ from "underscore";
 
 const Talker = {
-    joinedRoom() {
-        this.say('JoinRoom');
-    },
-
-    say(event, data = null) {
-        var message = {
+    say(event, data = undefined) {
+        this._s_room.send(this, {
             from: this._s_id,
-            type: this._s_type,
-            event: event
-        };
-
-        if (data) {
-            message.data = data;
-        }
-
-        this._s_room.send(this, message);
-    },
-
-    reply(remoteMsg, event, data) {
-        remoteMsg._reply({
-            from: this._s_id,
-            type: this._s_type,
             event: event,
             data: data
         });
     },
 
-    _onMessage(room, message) {
-        console.log(`Member [${this._s_id}] get message in room [${room.name}]:`, message);
+    reply(remoteMsg, event, data = undefined) {
+        remoteMsg._reply({
+            from: this._s_id,
+            event: event,
+            data: data
+        });
+    },
+
+    _onMessage(group, message) {
+        console.log(`Member [${this._s_id}] got message in group [${group.name}]:`, message);
 
         for (let v of this._s_callbacks) {
-            if (v.condition.event && (v.condition.event !== message.event)) {
-                continue;
+            if (v.condition(message)) {
+                v.func.call(v.self, message);
             }
-
-            if (v.condition.id && (v.condition.id !== message.from)) {
-                continue;
-            }
-
-            if (v.condition.type && (v.condition.type !== message.type)) {
-                continue;
-            }
-
-            v.func.call(v.condition.owner, message);
         }
     }
 };
 
-var Caller = {
+const new_condition = function (self) {
+    var ret = _.clone(Caller);
+    ret.self = self;
+    ret.condition = _ => true;
+    return ret;
+};
+
+const Caller = {
     on(event) {
-        if (this.condition) {
-            this.condition.event = event;
-            return this;
-        } else {
-            var ret = _.clone(this.self);
-            ret.condition = {
-                owner: this,
-                event: event
-            };
-            return ret;
-        }
+        var ret = this.condition ? this : new_condition(this);
+        const previous = ret.condition;
+        ret.condition = message => event == message.event && previous(message);
+        return ret;
     },
 
     from(id) {
-        if (this.condition) {
-            this.condition.id = id;
-            return this;
-        } else {
-            var ret = _.clone(this.self);
-            ret.condition = {
-                owner: this,
-                id: id
-            };
-            return ret;
-        }
-    },
-
-    ofType(type) {
-        if (this.condition) {
-            this.condition.type = type;
-            return this;
-        } else {
-            var ret = _.clone(this.self);
-            ret.condition = {
-                owner: this,
-                type: type
-            };
-            return ret;
-        }
+        var ret = this.condition ? this : new_condition(this);
+        const previous = ret.condition;
+        ret.condition = message => id == message.from && previous(message);
+        return ret;
     },
 
     call(func) {
-        if (_.isEmpty(this.condition)) {
-            throw `Need to set conditions when call ${func.name}`
+        if (!this.condition) {
+            throw `Need to set conditions before call ${func.name}`
         }
-        this.condition.owner._s_callbacks = this.condition.owner._s_callbacks || [];
-        this.condition.owner._s_callbacks.push({
+
+        this.self._s_callbacks = this.self._s_callbacks || [];
+        this.self._s_callbacks.push({
+            self: this.self,
             condition: this.condition,
             func: func
         });
     }
 };
-Caller.self = Caller;
 
 _.extend(Talker, Caller);
 

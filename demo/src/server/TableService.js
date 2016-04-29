@@ -3,7 +3,7 @@ import {Service} from "../../../build/sugar";
 export class TableService extends Service {
     constructor(id) {
         super(id);
-        this.from("t01").on('JoinRoom').call(this._tableJoinRoom);
+        this.from("t01").on('joined').call(this._tableJoinRoom);
     }
 
     _tableJoinRoom(message) {
