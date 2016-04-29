@@ -28,26 +28,26 @@ const Talker = {
     }
 };
 
-const new_condition = function (self) {
-    var ret = _.clone(Caller);
-    ret.self = self;
-    ret.condition = _ => true;
+const equals_condition = function (self, attr, value) {
+    var ret = self;
+    if (!self.condition) {
+        ret = _.clone(Caller);
+        ret.self = self;
+        ret.condition = _ => true;
+    }
+
+    const previous = ret.condition;
+    ret.condition = message => message[attr] === value && previous(message);
     return ret;
 };
 
 const Caller = {
     on(event) {
-        var ret = this.condition ? this : new_condition(this);
-        const previous = ret.condition;
-        ret.condition = message => event == message.event && previous(message);
-        return ret;
+        return equals_condition(this, "event", event);
     },
 
     from(id) {
-        var ret = this.condition ? this : new_condition(this);
-        const previous = ret.condition;
-        ret.condition = message => id == message.from && previous(message);
-        return ret;
+        return equals_condition(this, "from", id);
     },
 
     call(func) {
