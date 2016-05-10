@@ -1,70 +1,38 @@
 import _ from "underscore";
 
-const Talker = {
-    say(event, data = undefined) {
-        this._s_room.send(this, {
-            from: this._s_id,
-            event: event,
-            data: data
-        });
-    },
 
-    reply(remoteMsg, event, data = undefined) {
-        remoteMsg._reply({
-            from: this._s_id,
-            event: event,
-            data: data
-        });
-    },
-
-    _onMessage(group, message) {
-        console.log(`Member [${this._s_id}] got message in group [${group.name}]:`, message);
-
-        for (let v of this._s_callbacks) {
-            if (v.condition(message)) {
-                v.func.call(v.self, message);
-            }
-        }
-    }
-};
-
-const equals_condition = function (self, attr, value) {
+const add_condition = function (self, func) {
     var ret = self;
-    if (!self.condition) {
-        ret = _.clone(Caller);
+    if (!ret.condition) {
+        ret = _.clone(Talker);
         ret.self = self;
-        ret.condition = _ => true;
+        ret.condition = m => true;
     }
 
     const previous = ret.condition;
-    ret.condition = message => message[attr] === value && previous(message);
+    ret.condition = m => func(m) && previous(m);
     return ret;
 };
 
-const Caller = {
+const Talker = {
+    say(event, data = undefined) {
+        return this._s_inst.send(event, data);
+    },
+
     on(event) {
-        return equals_condition(this, "event", event);
+        return add_condition(this, m => m["event"] == event);
     },
 
     from(id) {
-        return equals_condition(this, "from", id);
+        return add_condition(this, m => m["from"] == id);
     },
 
-    call(func) {
-        if (!this.condition) {
-            throw `Need to set conditions before call ${func.name}`
+    then(func) {
+        if (this.condition) {
+            this.self._s_inst.addCallback(this.condition, func);
         }
-
-        this.self._s_callbacks = this.self._s_callbacks || [];
-        this.self._s_callbacks.push({
-            self: this.self,
-            condition: this.condition,
-            func: func
-        });
     }
 };
-
-_.extend(Talker, Caller);
 
 export {
     Talker

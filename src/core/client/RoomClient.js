@@ -1,25 +1,30 @@
 import _ from "underscore";
 import Socket from "socket.io-client";
 import {Room} from "../room/Room";
+import {union} from "../util/lang";
 
 export class RoomClient extends Room {
     constructor(url) {
         super();
+        this._remoteGroups = [];
         this._connection = Socket(url);
+
+        this._connection.on('groups', groupNames => {
+            this._remoteGroups = union(this._remoteGroups, groupNames);
+        });
+
         this._connection.on('message', remoteMsg => {
-            this.sendToRooms([remoteMsg.groupName], remoteMsg.message);
+            this.sendToGroups([remoteMsg.groupName], remoteMsg.message);
         });
     }
 
-    bridge(groupName, remoteGroupName) {
-        const group = _.find(this._groups, g => g.name === groupName) || this._createGroup(groupName);
-        if (!_.find(group.remoteGroupNames, r => r === remoteGroupName)) {
-            group.remoteGroupNames.push(remoteGroupName);
-        }
+    groupRegistered(group) {
+        this._connection.emit('groups', [group.name]);
     }
 
     send(memberInst, message) {
         const member = super.send(memberInst, message);
+
         _.each(member.groups, g => {
             if (!_.isEmpty(g.remoteGroupNames)) {
                 this._connection.emit('message', {
