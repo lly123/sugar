@@ -1,18 +1,6 @@
 import _ from "underscore";
 
-
-const add_condition = function (self, func) {
-    var ret = self;
-    if (!ret.condition) {
-        ret = _.clone(Talker);
-        ret.self = self;
-        ret.condition = m => true;
-    }
-
-    const previous = ret.condition;
-    ret.condition = m => func(m) && previous(m);
-    return ret;
-};
+const EVENT_REGEX = /^([^@]*)@?(.*)$/;
 
 const Talker = {
     say(event, data = undefined) {
@@ -20,16 +8,60 @@ const Talker = {
     },
 
     on(event) {
-        return add_condition(this, m => m["event"] == event);
+        if (!_.isString(event) || _.isEmpty(event)) {
+            throw "Event is illegal."
+        }
+
+        const match = EVENT_REGEX.exec(event);
+        if (match) {
+            let event_matcher = m => _.isEmpty(match[1]) ?
+                true :
+                ("event" in m) ?
+                    (match[1].match(/^\/.+\/$/) ? eval(match[1]).test(m["event"]) : match[1] == m["event"]) :
+                    false;
+
+            let id_matcher = m => _.isEmpty(match[2]) ? true : ("from" in m) && (m["from"] == match[2]);
+
+            let matcher = m => event_matcher(m) && id_matcher(m) ? m : undefined;
+
+            return {
+                _matcher: matcher,
+                then: func => this._s_inst.addCallback(matcher, func)
+            }
+        }
     },
 
-    from(id) {
-        return add_condition(this, m => m["from"] == id);
+    on_all(...events) {
+        let event_matchers = _.map(events, e => Talker.on(e)._matcher);
+
+        const matcher = _.partial((s, m) => {
+            let not_matches = _.filter(event_matchers, f => _.isUndefined(f(m)));
+
+            if (event_matchers.length == not_matches.length) {
+                return undefined;
+            }
+
+            s.push(m);
+
+            if (not_matches.length == 0) {
+                return s;
+            }
+
+            event_matchers = not_matches;
+            return undefined;
+        }, []);
+
+        return {
+            then: func => this._s_inst.addCallback(matcher, func)
+        }
     },
 
-    then(func) {
-        if (this.condition) {
-            this.self._s_inst.addCallback(this.condition, func);
+    on_any(...events) {
+        const event_matchers = _.map(events, e => Talker.on(e)._matcher);
+        const matcher = m => _.find(event_matchers, f => !_.isUndefined(f(m))) ? m : undefined;
+
+        return {
+            then: func => this._s_inst.addCallback(matcher, func)
         }
     }
 };

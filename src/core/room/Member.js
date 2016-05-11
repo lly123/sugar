@@ -39,7 +39,7 @@ class Member {
         const promise = new Promise(resolve => {
             this._room._emitter.once(`${REPLY_GROUP_PREFIX}-${message_id}`, this.onMessage.bind(this, [
                 {
-                    condition: m => true,
+                    matcher: m => m,
                     func: m => resolve(m)
                 }
             ]));
@@ -70,15 +70,18 @@ class Member {
         };
 
         callbacks.forEach(c => {
-            if (message.from != this._id && c.condition(message)) {
-                c.func.call(this, message);
+            if (message.from != this._id) {
+                let ret = c.matcher(message);
+                if (!_.isUndefined(ret)) {
+                    c.func.call(this, ret);
+                }
             }
         });
     }
 
-    addCallback(condition, func) {
+    addCallback(matcher, func) {
         this._callbacks.push({
-            condition: condition,
+            matcher: matcher,
             func: func
         });
     }
