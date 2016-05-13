@@ -1,7 +1,7 @@
 import {Room} from "../../../src/core/room/Room";
 import {Member} from "../../../src/core/room/Member";
 
-describe("Member Test Suite", function () {
+describe("Local Talk Test Suite", function () {
     it("should create member", function () {
         let div1 = document.createElement('div');
         div1._s_id = "div1";

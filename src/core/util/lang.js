@@ -18,6 +18,17 @@ function unionDictValue(dict, dictKey, arr, key = (x => x)) {
     dict[dictKey] = union(dictKey in dict ? dict[dictKey] : [], arr, key);
 }
 
+function setAdd(arr, value, resolve = () => {
+}, reject = () => {
+}) {
+    if (!_.find(arr, v => v == value)) {
+        arr.push(value);
+        resolve();
+    } else {
+        reject();
+    }
+}
+
 export {
-    toArray, union, unionDictValue
+    toArray, union, unionDictValue, setAdd
 };

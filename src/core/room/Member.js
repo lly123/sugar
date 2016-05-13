@@ -3,6 +3,7 @@ import {Promise} from "es6-promise";
 import uuid from "uuid";
 import {info} from "../util/logger";
 import {Talker} from "../room/Talker";
+import {setAdd} from "../util/lang";
 
 const REPLY_GROUP_PREFIX = "__reply__";
 
@@ -27,10 +28,8 @@ class Member {
     }
 
     addGroup(groupName) {
-        if (!_.find(this._groupNames, n => n == groupName)) {
-            this._groupNames.push(groupName);
-            this._room._emitter.on(groupName, this.onMessage.bind(this, this._callbacks));
-        }
+        setAdd(this._groupNames, groupName, () =>
+            this._room._emitter.on(groupName, this.onMessage.bind(this, this._callbacks)));
     }
 
     send(event, data = undefined) {

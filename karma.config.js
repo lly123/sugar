@@ -7,9 +7,10 @@ module.exports = function (config) {
         plugins: [
             require("karma-webpack"),
             "karma-jasmine",
-            "karma-phantomjs-launcher"
+            "karma-phantomjs-launcher",
+            "karma-express-http-server"
         ],
-        frameworks: ['jasmine'],
+        frameworks: ['jasmine', 'express-http-server'],
         preprocessors: {
             'test-context.js': ['webpack']
         },
@@ -18,6 +19,7 @@ module.exports = function (config) {
                 loaders: [
                     {
                         test: /\.jsx?$/,
+                        exclude: /node_modules/,
                         loader: 'babel',
                         query: {
                             presets: ['es2015', 'react']
@@ -29,6 +31,16 @@ module.exports = function (config) {
         },
         webpackServer: {
             noInfo: true
+        },
+        expressHttpServer: {
+            appVisitor: function (app, log) {
+                var Http = require('http');
+                var sugar = require('./build/sugar');
+
+                const server = Http.Server(app);
+                sugar.roomServer(server);
+                server.listen(3000);
+            }
         }
     });
 };
