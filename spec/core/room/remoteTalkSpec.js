@@ -10,5 +10,6 @@ describe("Remote Talk Test Suite", function () {
         let member = Member.create(roomClient, div1);
 
         console.log('>>>>');
+        done();
     });
 });

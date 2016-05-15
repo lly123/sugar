@@ -12,7 +12,7 @@ class Member {
         this._room = room;
         this._id = id;
         this._groupNames = [];
-        this._callbacks = [];
+        this._pipelines = [];
     }
 
     static create(room, memberInst) {
@@ -29,19 +29,14 @@ class Member {
 
     addGroup(groupName) {
         setAdd(this._groupNames, groupName, () =>
-            this._room._emitter.on(groupName, this.onMessage.bind(this, this._callbacks)));
+            this._room._emitter.on(groupName, this.onMessage.bind(this, this._pipelines)));
     }
 
     send(event, data = undefined) {
         const message_id = uuid.v4();
 
         const promise = new Promise(resolve => {
-            this._room._emitter.once(`${REPLY_GROUP_PREFIX}-${message_id}`, this.onMessage.bind(this, [
-                {
-                    matcher: m => m,
-                    func: m => resolve(m)
-                }
-            ]));
+            this._room._emitter.once(`${REPLY_GROUP_PREFIX}-${message_id}`, this.onMessage.bind(this, [resolve]));
         });
 
         const message = {
@@ -63,26 +58,21 @@ class Member {
         return promise;
     }
 
-    onMessage(callbacks, message) {
+    onMessage(pipelines, message) {
         message.reply = data => {
             return this.send(`${REPLY_GROUP_PREFIX}-${message.id}`, data);
         };
 
-        callbacks.forEach(c => {
+        pipelines.forEach(p => {
             if (message.from != this._id) {
-                let ret = c.matcher(message);
-                if (!_.isUndefined(ret)) {
-                    c.func.call(this, ret);
-                }
+                p(message);
             }
         });
     }
 
-    addCallback(matcher, func) {
-        this._callbacks.push({
-            matcher: matcher,
-            func: func
-        });
+    addPipeline(pipeline) {
+        this._pipelines.push(pipeline);
+        return pipeline;
     }
 }
 
