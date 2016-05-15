@@ -38,39 +38,27 @@ const Talker = {
         return ret;
     },
 
-    // on_all(...events) {
-    //     let event_matchers = _.map(events, e => Talker.on(e)._matcher);
-    //
-    //     const matcher = _.partial((s, m) => {
-    //         let not_matches = _.filter(event_matchers, f => _.isUndefined(f(m)));
-    //
-    //         if (event_matchers.length == not_matches.length) {
-    //             return undefined;
-    //         }
-    //
-    //         s.push(m);
-    //
-    //         if (not_matches.length == 0) {
-    //             return s;
-    //         }
-    //
-    //         event_matchers = not_matches;
-    //         return undefined;
-    //     }, []);
-    //
-    //     return {
-    //         then: func => this._s_inst.addCallback(matcher, func)
-    //     }
-    // },
-    //
-    // on_any(...events) {
-    //     const event_matchers = _.map(events, e => Talker.on(e)._matcher);
-    //     const matcher = m => _.find(event_matchers, f => !_.isUndefined(f(m))) ? m : undefined;
-    //
-    //     return {
-    //         then: func => this._s_inst.addCallback(matcher, func)
-    //     }
-    // }
+    on_race(...events) {
+        let cache = {
+            events: [],
+            messages: []
+        };
+        let eventPipelines = _.map(events, e => this.__eventPipeline(e, cache));
+        let ret = PromisePipe();
+
+        this._s_inst.addPipeline(m => {
+            _.each(eventPipelines, p => {
+                p(m).then(() => {
+                    if (!_.isEmpty(cache.events)) {
+                        cache.events.splice(0, cache.events.length);
+                        ret(cache.messages[0]);
+                    }
+                });
+            });
+        });
+
+        return ret;
+    },
 
     __eventPipeline(event, cache = undefined) {
         if (!_.isString(event) || _.isEmpty(event)) {
