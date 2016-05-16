@@ -6,14 +6,10 @@ class RoomClient extends Room {
         super();
         this._socket = io.connect(url);
 
-        this._socket.on('connect', () => {
-            this._socket.emit('groupNames', this._groupNames);
+        return new Promise((resolve, reject) => {
+            this._socket.on('connect', () => resolve(this));
+            this._socket.on('connect_error', () => reject(this));
         });
-
-        //
-        // this._connection.on('message', remoteMsg => {
-        //     this.sendToGroups([remoteMsg.groupName], remoteMsg.message);
-        // });
     }
 
     // groupRegistered(group) {
