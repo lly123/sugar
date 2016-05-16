@@ -1,6 +1,7 @@
 import Events from "events";
 import {toArray, setAdd} from "../util/lang";
 import {Member} from "./Member";
+import {Promise} from "es6-promise";
 
 const EventEmitter = Events.EventEmitter;
 
@@ -8,6 +9,7 @@ class Room {
     constructor() {
         this._emitter = new EventEmitter();
         this._groupNames = [];
+        return Promise.resolve(this);
     }
 
     join(memberInst, groupName) {
@@ -18,7 +20,7 @@ class Room {
             member.addGroup(n);
         });
 
-        member.send('joined');
+        return Promise.resolve(memberInst.$);
     }
 }
 
