@@ -21,20 +21,16 @@ const Talker = {
             events: [],
             messages: []
         };
-        let eventPipelines = _.map(events, e => this.__eventPipeline(e, cache));
         let ret = PromisePipe();
 
-        this._s_inst.addPipeline(m => {
-            _.each(eventPipelines, p => {
-                p(m).then(() => {
-                    if (_.isEmpty(_.difference(events, cache.events))) {
-                        cache.events.splice(0, cache.events.length);
-                        ret(cache.messages);
-                    }
-                });
-            });
-        });
+        let eventPipelines = _.map(events, e => this.__eventPipeline(e, cache).then(() => {
+            if (_.isEmpty(_.difference(events, cache.events))) {
+                cache.events.splice(0, cache.events.length);
+                ret(cache.messages);
+            }
+        }));
 
+        this._s_inst.addPipeline(m => _.each(eventPipelines, p => p(m)));
         return ret;
     },
 
@@ -43,20 +39,16 @@ const Talker = {
             events: [],
             messages: []
         };
-        let eventPipelines = _.map(events, e => this.__eventPipeline(e, cache));
         let ret = PromisePipe();
 
-        this._s_inst.addPipeline(m => {
-            _.each(eventPipelines, p => {
-                p(m).then(() => {
-                    if (!_.isEmpty(cache.events)) {
-                        cache.events.splice(0, cache.events.length);
-                        ret(cache.messages[0]);
-                    }
-                });
-            });
-        });
+        let eventPipelines = _.map(events, e => this.__eventPipeline(e, cache).then(() => {
+            if (!_.isEmpty(cache.events)) {
+                cache.events.splice(0, cache.events.length);
+                ret(cache.messages[0]);
+            }
+        }));
 
+        this._s_inst.addPipeline(m => _.each(eventPipelines, p => p(m)));
         return ret;
     },
 
