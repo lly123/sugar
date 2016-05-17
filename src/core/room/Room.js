@@ -13,7 +13,7 @@ class Room {
     }
 
     join(memberInst, groupName) {
-        const member = memberInst._s_inst || Member.create(this, memberInst);
+        const member = memberInst.$ || Member.create(this, memberInst);
 
         toArray(groupName).forEach(n => {
             setAdd(this._groupNames, n);
