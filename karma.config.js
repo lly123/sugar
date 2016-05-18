@@ -45,7 +45,15 @@ module.exports = function (config) {
                             talker.say("result", _.reduce(m.data, function (s, v) {
                                 return s + v
                             }, 0))
-                        })
+                        });
+
+                        talker.on("multiply").then(function (m) {
+                            m.reply(_.reduce(m.data, function (s, v) {
+                                return s * v
+                            }, 1)).then(function (m) {
+                                m.reply("you are welcome");
+                            })
+                        });
                     })
                 });
 

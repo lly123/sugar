@@ -1,6 +1,8 @@
 import io from "socket.io";
 import {Room} from "../room/Room";
+import {REPLY_GROUP_PREFIX} from "../room/Member";
 import {info} from "../util/logger";
+import {setAdd} from "../util/lang";
 
 const SOCKET_MEMBER_ID_PREFIX = "__socket-io__";
 
@@ -19,7 +21,7 @@ export class RoomServer extends Room {
                     if (e.type == "normal") {
                         s.on(e.event).then(m => {
                             if (!m.__remote__) {
-                                socket.emit("serverMessage", m)
+                                socket.emit("serverMessage", m);
                             }
                         });
                     }
@@ -27,6 +29,11 @@ export class RoomServer extends Room {
             });
 
             socket.on("clientMessage", m => {
+                const groupName = `${REPLY_GROUP_PREFIX}-${m.id}`;
+                this._emitter.once(groupName, m => {
+                    setAdd(m.in_groups, groupName);
+                    socket.emit("serverMessage", m);
+                });
                 m.__remote__ = true;
                 m.in_groups.forEach(g => this._emitter.emit(g, m));
             });

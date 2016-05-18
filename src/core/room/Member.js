@@ -4,13 +4,11 @@ import uuid from "uuid";
 import {info} from "../util/logger";
 import {setAdd} from "../util/lang";
 
-
 const PromisePipe = require('promise-pipe')();
 const REPLY_GROUP_PREFIX = "__reply__";
 const EVENT_REGEX = /^([^@]*)@?(.*)$/;
 const EMPTY_FUNC = () => {
 };
-
 
 class Member {
     constructor(room, id) {
@@ -39,8 +37,7 @@ class Member {
 
         const promise = new Promise(resolve => {
             const groupName = `${REPLY_GROUP_PREFIX}-${message_id}`;
-            let message_matcher = m => resolve(m);
-            this._room._emitter.once(groupName, this.__onMessage.bind(this, groupName, [message_matcher]));
+            this._room._emitter.once(groupName, this.__onMessage.bind(this, groupName, [resolve]));
         });
 
         const message = {
@@ -162,5 +159,5 @@ class Member {
 }
 
 export {
-    Member
+    Member, REPLY_GROUP_PREFIX
 }
