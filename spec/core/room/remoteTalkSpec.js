@@ -1,5 +1,4 @@
 import {RoomClient} from "../../../src/core/client/RoomClient";
-import {Member} from "../../../src/core/room/Member";
 
 describe("Remote Talk Test Suite", function () {
     it("should create member", function (done) {
@@ -7,9 +6,14 @@ describe("Remote Talk Test Suite", function () {
         div1._s_id = "div1";
 
         new RoomClient('http://localhost:3000').then(r => {
-            let member = Member.create(r, div1);
-            console.log('>>>>');
-            done();
+            r.join(div1, "group1").then(talker => {
+                talker.on("result").then(m => {
+                    expect(m.data).toEqual(6);
+                    done();
+                });
+
+                talker.say("sum", [1, 2, 3]);
+            });
         });
-    });
+    }, 10000);
 });

@@ -34,11 +34,21 @@ module.exports = function (config) {
         },
         expressHttpServer: {
             appVisitor: function (app, log) {
+                var _ = require('underscore');
                 var Http = require('http');
                 var sugar = require('./build/sugar');
-
                 const server = Http.Server(app);
-                sugar.roomServer(server);
+
+                sugar.roomServer(server).then(function (r) {
+                    r.join({_s_id: 'service1'}, "group1").then(function (talker) {
+                        talker.on("sum").then(function (m) {
+                            talker.say("result", _.reduce(m.data, function (s, v) {
+                                return s + v
+                            }, 0))
+                        })
+                    })
+                });
+
                 server.listen(3000);
             }
         }

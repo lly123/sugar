@@ -18,6 +18,7 @@ class Member {
         this._id = id;
         this._groupNames = [];
         this._pipelines = [];
+        this._registerEventCallback = room.__registerEvent.bind(room);
     }
 
     static create(room, memberInst) {
@@ -30,19 +31,23 @@ class Member {
 
     addGroup(groupName) {
         setAdd(this._groupNames, groupName, () =>
-            this._room._emitter.on(groupName, this.__onMessage.bind(this, this._pipelines)));
+            this._room._emitter.on(groupName, this.__onMessage.bind(this, groupName, this._pipelines)));
     }
 
     say(event, data = undefined) {
         const message_id = uuid.v4();
 
         const promise = new Promise(resolve => {
-            this._room._emitter.once(`${REPLY_GROUP_PREFIX}-${message_id}`, this.__onMessage.bind(this, [resolve]));
+            const groupName = `${REPLY_GROUP_PREFIX}-${message_id}`;
+            let message_matcher = m => resolve(m);
+            this._room._emitter.once(groupName, this.__onMessage.bind(this, groupName, [message_matcher]));
         });
 
         const message = {
             id: message_id,
-            from: this._id
+            from: this._id,
+            in_groups: [],
+            __remote__: false
         };
 
         if (data) {
@@ -60,7 +65,9 @@ class Member {
     }
 
     on(event) {
-        return this.__addPipeline(this.__eventPipeline(event));
+        let ret = this.__addPipeline(this.__eventPipeline(event));
+        this._registerEventCallback(this._id, this._groupNames, 'normal', event);
+        return ret;
     }
 
     on_all(...events) {
@@ -99,13 +106,14 @@ class Member {
         return ret;
     }
 
-    __onMessage(pipelines, message) {
+    __onMessage(groupName, pipelines, message) {
         message.reply = data => {
             return this.say(`${REPLY_GROUP_PREFIX}-${message.id}`, data);
         };
 
         pipelines.forEach(p => {
             if (message.from != this._id) {
+                setAdd(message.in_groups, groupName);
                 p(message);
             }
         });
@@ -134,7 +142,7 @@ class Member {
 
         let id_matcher = m => _.isEmpty(match[2]) ? true : ("from" in m) && (m["from"] == match[2]);
 
-        let matcher = m => {
+        let message_matcher = m => {
             if (cache && _.any(cache.events, e => e == event)) {
                 return m;
             }
@@ -149,7 +157,7 @@ class Member {
             throw m;
         };
 
-        return PromisePipe().then(matcher);
+        return PromisePipe().then(message_matcher);
     }
 }
 
