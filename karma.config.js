@@ -42,7 +42,7 @@ module.exports = function (config) {
                 sugar.roomServer(server).then(function (r) {
                     r.join({_s_id: 'service1'}, "group1").then(function (talker) {
                         talker.on("sum").then(function (m) {
-                            talker.say("result", _.reduce(m.data, function (s, v) {
+                            talker.say("sumResult", _.reduce(m.data, function (s, v) {
                                 return s + v
                             }, 0))
                         });
@@ -53,6 +53,16 @@ module.exports = function (config) {
                             }, 1)).then(function (m) {
                                 m.reply("you are welcome");
                             })
+                        });
+
+                        talker.on_all("leftValue", "rightValue", "add").then(function (messages) {
+                            talker.say("addResult", parseInt(messages[0].data) + parseInt(messages[1].data));
+                        });
+
+                        talker.on("send me a message").then(function () {
+                            talker.say("message_from", "server");
+                            talker.say("message_to", "client");
+                            talker.say("message_text", "hello");
                         });
                     })
                 });

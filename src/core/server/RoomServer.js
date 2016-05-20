@@ -1,3 +1,4 @@
+import _ from "underscore";
 import io from "socket.io";
 import {Room} from "../room/Room";
 import {REPLY_GROUP_PREFIX} from "../room/Member";
@@ -13,22 +14,13 @@ export class RoomServer extends Room {
         this._events = [];
 
         this._io.on('connection', socket => {
-            info(`Client [${socket.id}] has connected.`);
-            socket._s_id = `${SOCKET_MEMBER_ID_PREFIX}-${socket.id}`;
+            const send_remote_message = m => {
+                if (!m.__remote__) {
+                    socket.emit("serverMessage", m);
+                }
+            };
 
-            socket.on("clientEvent", e => {
-                this.join(socket, e.groupNames).then(s => {
-                    if (e.type == "normal") {
-                        s.on(e.event).then(m => {
-                            if (!m.__remote__) {
-                                socket.emit("serverMessage", m);
-                            }
-                        });
-                    }
-                });
-            });
-
-            socket.on("clientMessage", m => {
+            const relay_message = m => {
                 const groupName = `${REPLY_GROUP_PREFIX}-${m.id}`;
                 this._emitter.once(groupName, m => {
                     setAdd(m.in_groups, groupName);
@@ -36,6 +28,30 @@ export class RoomServer extends Room {
                 });
                 m.__remote__ = true;
                 m.in_groups.forEach(g => this._emitter.emit(g, m));
+            };
+
+            info(`Client [${socket.id}] has connected.`);
+            socket._s_id = `${SOCKET_MEMBER_ID_PREFIX}-${socket.id}`;
+
+            socket.on("clientEvent", e => {
+                this.join(socket, e.groupNames).then(s => {
+                    switch (e.type) {
+                        case "on":
+                            s.on(e.event).then(send_remote_message);
+                            break;
+                        case "on_all":
+                            s.on_all(...e.event).then(send_remote_message);
+                            break;
+                    }
+                });
+            });
+
+            socket.on("clientMessage", m => {
+                if (_.isArray(m)) {
+                    m.forEach(v => relay_message(v));
+                } else {
+                    relay_message(m);
+                }
             });
 
             socket.emit("serverEvents", this._events);

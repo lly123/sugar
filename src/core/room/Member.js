@@ -63,7 +63,7 @@ class Member {
 
     on(event) {
         let ret = this.__addPipeline(this.__eventPipeline(event));
-        this._registerEventCallback(this._id, this._groupNames, 'normal', event);
+        this._registerEventCallback(this._id, this._groupNames, 'on', event);
         return ret;
     }
 
@@ -82,6 +82,7 @@ class Member {
         }));
 
         this.__addPipeline(m => _.each(eventPipelines, p => p(m)));
+        this._registerEventCallback(this._id, this._groupNames, 'on_all', events);
         return ret;
     }
 

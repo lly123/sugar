@@ -8,7 +8,7 @@ describe("Remote Talk Test Suite", function () {
         new RoomClient('http://localhost:3000').then(r => {
             r.join(div1, "group1").then(talker => {
                 const p1 = new Promise(resolve => {
-                    talker.on("result").then(m => {
+                    talker.on("sumResult").then(m => {
                         expect(m.data).toEqual(6);
                         resolve();
                     });
@@ -26,7 +26,29 @@ describe("Remote Talk Test Suite", function () {
                     });
                 });
 
-                Promise.all([p1, p2]).then(() => done());
+                const p3 = new Promise(resolve => {
+                    talker.on("addResult").then(m => {
+                        expect(m.data).toEqual(300);
+                        resolve();
+                    });
+
+                    talker.say("leftValue", 100);
+                    talker.say("rightValue", 200);
+                    talker.say("add");
+                });
+
+                const p4 = new Promise(resolve => {
+                    talker.on_all("message_from", "message_to", "message_text").then(messages => {
+                        expect(messages[0].data).toEqual("server");
+                        expect(messages[1].data).toEqual("client");
+                        expect(messages[2].data).toEqual("hello");
+                        resolve();
+                    });
+
+                    talker.say("send me a message");
+                });
+
+                Promise.all([p1, p2, p3, p4]).then(() => done());
             });
         });
     });
