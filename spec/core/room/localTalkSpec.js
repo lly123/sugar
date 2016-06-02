@@ -30,7 +30,7 @@ describe("Local Talk Test Suite", function () {
             talkers[0].say("joined");
         });
     });
-
+    
     it("should say and receive message", function (done) {
         let div1 = document.createElement('div');
         let div2 = document.createElement('div');
@@ -103,15 +103,25 @@ describe("Local Talk Test Suite", function () {
             r.join(div3, ["group1", "group2", "group3"])
         ]).then(talkers => {
             talkers[1].on_all("hello", "@div3", "foo@div3").then(messages => {
-                expect(messages.length).toBe(2);
+                expect(messages.length).toBe(3);
+
                 expect(messages[0].event).toEqual("hello");
+                expect(messages[0].data.content).toEqual("world!");
                 expect(messages[0].in_groups).toEqual(["group1"]);
+
                 expect(messages[1].event).toEqual("foo");
+                expect(messages[1].data.content).toEqual("world");
                 expect(messages[1].in_groups).toEqual(["group1", "group2"]);
+
+                expect(messages[2].event).toEqual("foo");
+                expect(messages[2].data.content).toEqual("world");
+                expect(messages[2].in_groups).toEqual(["group1", "group2"]);
+
                 done();
             });
 
             talkers[0].say("hello", {content: "world"});
+            talkers[0].say("hello", {content: "world!"});
             talkers[2].say("foo", {content: "world"});
         });
     });

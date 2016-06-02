@@ -68,16 +68,14 @@ class Member {
     }
 
     on_all(...events) {
-        let cache = {
-            events: [],
-            messages: []
-        };
+        let cache = [];
         let ret = PromisePipe();
 
         let eventPipelines = _.map(events, e => this.__eventPipeline(e, cache).then(() => {
-            if (_.isEmpty(_.difference(events, cache.events))) {
-                cache.events.splice(0, cache.events.length);
-                ret(cache.messages);
+            if (_.isEmpty(_.difference(events, _.map(cache, c => c.event)))) {
+                let messages = _.map(cache, c => c.message);
+                cache.splice(0, cache.length);
+                ret(messages);
             }
         }));
 
@@ -87,16 +85,14 @@ class Member {
     }
 
     on_race(...events) {
-        let cache = {
-            events: [],
-            messages: []
-        };
+        let cache = [];
         let ret = PromisePipe();
 
         let eventPipelines = _.map(events, e => this.__eventPipeline(e, cache).then(() => {
-            if (!_.isEmpty(cache.events)) {
-                cache.events.splice(0, cache.events.length);
-                ret(cache.messages[0]);
+            if (!_.isEmpty(cache)) {
+                let message = cache[0].message;
+                cache.splice(0, cache.length);
+                ret(message);
             }
         }));
 
@@ -141,14 +137,17 @@ class Member {
         let id_matcher = m => _.isEmpty(match[2]) ? true : ("from" in m) && (m["from"] == match[2]);
 
         let message_matcher = m => {
-            if (cache && _.any(cache.events, e => e == event)) {
-                return m;
-            }
-
             if (event_matcher(m) && id_matcher(m)) {
                 if (cache) {
-                    setAdd(cache.events, event);
-                    setAdd(cache.messages, m, EMPTY_FUNC, EMPTY_FUNC, m => m.id);
+                    let item = _.find(cache, c => c.event == event);
+                    if (item) {
+                        item.message = m;
+                    } else {
+                        cache.push({
+                            event: event,
+                            message: m
+                        });
+                    }
                 }
                 return m;
             }
