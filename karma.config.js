@@ -64,6 +64,12 @@ module.exports = function (config) {
                             talker.say("message_to", "client");
                             talker.say("message_text", "hello");
                         });
+
+                        talker.on("send me a color").then(function () {
+                            talker.say("blue", "blue color");
+                            talker.say("red", "red color");
+                            talker.say("yellow", "yellow color");
+                        });
                     })
                 });
 

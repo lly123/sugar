@@ -19,21 +19,10 @@ export class RoomServer extends Room {
             socket._s_id = `${SOCKET_MEMBER_ID_PREFIX}-${socket.id}`;
 
             socket.on("clientEvent", e => {
-                this.join(socket, e.groupNames).then(s => {
-                    switch (e.type) {
-                        case "on":
-                            s.on(e.event).then(send_to_remote);
-                            break;
-                        case "on_all":
-                            s.on_all(...e.event).then(send_to_remote);
-                            break;
-                    }
-                });
+                this.join(socket, e.groupNames).then(s => s[e.type](...toArray(e.event)).then(send_to_remote));
             });
 
-            socket.on("clientMessage", m => {
-                toArray(m).forEach(v => relay_message(v));
-            });
+            socket.on("clientMessage", m => toArray(m).forEach(v => relay_message(v)));
 
             socket.emit("serverEvents", this._events);
         });

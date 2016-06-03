@@ -95,6 +95,7 @@ class Member {
         }));
 
         this.__addPipeline(m => _.each(eventPipelines, p => p(m)));
+        this._registerEventCallback(this._id, this._groupNames, 'on_race', events);
         return ret;
     }
 

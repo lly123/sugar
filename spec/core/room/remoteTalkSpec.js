@@ -48,7 +48,16 @@ describe("Remote Talk Test Suite", function () {
                     talker.say("send me a message");
                 });
 
-                Promise.all([p1, p2, p3, p4]).then(() => done());
+                const p5 = new Promise(resolve => {
+                    talker.on_race("red", "blue", "yellow").then(message => {
+                        expect(message.data).toEqual("blue color");
+                        resolve();
+                    });
+
+                    talker.say("send me a color");
+                });
+
+                Promise.all([p1, p2, p3, p4, p5]).then(() => done());
             });
         });
     });

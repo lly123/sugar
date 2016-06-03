@@ -19,24 +19,14 @@ class RoomClient extends Room {
             this._socket.on("connect", () => {
                 this._socket.on("serverEvents", events => {
                     events.forEach(e => {
-                        this.join(this._socket, e.groupNames).then(s => {
-                            switch (e.type) {
-                                case "on":
-                                    s.on(e.event).then(send_to_remote);
-                                    break;
-                                case "on_all":
-                                    s.on_all(...e.event).then(send_to_remote);
-                                    break;
-                            }
-                        });
+                        this.join(this._socket, e.groupNames).then(
+                            s => s[e.type](...toArray(e.event)).then(send_to_remote));
                     });
                     resolve(this);
                 });
             });
 
-            this._socket.on("serverMessage", m => {
-                toArray(m).forEach(v => relay_message(v));
-            });
+            this._socket.on("serverMessage", m => toArray(m).forEach(v => relay_message(v)));
         });
     }
 
