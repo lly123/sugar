@@ -7,8 +7,6 @@ import {setAdd} from "../util/lang";
 const PromisePipe = require('promise-pipe')();
 const REPLY_GROUP_PREFIX = "__reply__";
 const EVENT_REGEX = /^([^@]*)@?(.*)$/;
-const EMPTY_FUNC = () => {
-};
 
 class Member {
     constructor(room, id) {

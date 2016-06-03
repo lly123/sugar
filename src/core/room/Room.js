@@ -1,6 +1,6 @@
 import Events from "events";
 import {toArray, setAdd} from "../util/lang";
-import {Member} from "./Member";
+import {Member, REPLY_GROUP_PREFIX} from "./Member";
 import {Promise} from "es6-promise";
 import {info} from "../util/logger";
 
@@ -21,6 +21,24 @@ class Room {
         });
 
         return Promise.resolve(memberInst.$);
+    }
+
+    static send_to_remote(socket, remoteMessageEvent, message) {
+        if (!message.__remote__) {
+            socket.emit(remoteMessageEvent, message);
+        }
+    }
+
+    static relay_message(socket, remoteMessageEvent, message) {
+        const groupName = `${REPLY_GROUP_PREFIX}-${message.id}`;
+
+        this._emitter.once(groupName, m => {
+            setAdd(m.in_groups, groupName);
+            socket.emit(remoteMessageEvent, m);
+        });
+
+        message.__remote__ = true;
+        message.in_groups.forEach(g => this._emitter.emit(g, message));
     }
 
     __registerEvent(groupNames, type, event) {

@@ -1,8 +1,6 @@
-import _ from "underscore";
 import io from "socket.io-client";
 import {Room} from "../room/Room";
-import {REPLY_GROUP_PREFIX} from "../room/Member";
-import {setAdd} from "../util/lang";
+import {toArray} from "../util/lang";
 
 const SOCKET_MEMBER_ID = "__socket-io__";
 
@@ -12,22 +10,9 @@ class RoomClient extends Room {
         this._socket = io.connect(url);
 
         return new Promise((resolve, reject) => {
-            const send_remote_message = m => {
-                if (!m.__remote__) {
-                    this._socket.emit("clientMessage", m);
-                }
-            };
-
-            const relay_message = m => {
-                const groupName = `${REPLY_GROUP_PREFIX}-${m.id}`;
-                this._emitter.once(groupName, m => {
-                    setAdd(m.in_groups, groupName);
-                    this._socket.emit("clientMessage", m);
-                });
-                m.__remote__ = true;
-                m.in_groups.forEach(g => this._emitter.emit(g, m));
-            };
-
+            const send_to_remote = Room.send_to_remote.bind(this, this._socket, "clientMessage");
+            const relay_message = Room.relay_message.bind(this, this._socket, "clientMessage");
+            
             this._socket._s_id = SOCKET_MEMBER_ID;
             this._socket.on("connect_error", () => reject(this));
 
@@ -37,10 +22,10 @@ class RoomClient extends Room {
                         this.join(this._socket, e.groupNames).then(s => {
                             switch (e.type) {
                                 case "on":
-                                    s.on(e.event).then(send_remote_message);
+                                    s.on(e.event).then(send_to_remote);
                                     break;
                                 case "on_all":
-                                    s.on_all(...e.event).then(send_remote_message);
+                                    s.on_all(...e.event).then(send_to_remote);
                                     break;
                             }
                         });
@@ -50,11 +35,7 @@ class RoomClient extends Room {
             });
 
             this._socket.on("serverMessage", m => {
-                if (_.isArray(m)) {
-                    m.forEach(v => relay_message(v));
-                } else {
-                    relay_message(m);
-                }
+                toArray(m).forEach(v => relay_message(v));
             });
         });
     }
