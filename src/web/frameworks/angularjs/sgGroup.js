@@ -14,12 +14,14 @@ class sgGroup {
     }
 
     preLink(scope, elem, attrs) {
-        let groupName = attrs['sgGroup'];
+        let groupNames = attrs['sgGroup'].trim().split(/\s*,\s*/);
 
         scope.__sg_joinGroup = (elem, fn) => {
-            new Promise((resolve) => {
-                scope.__sg_joinRoom(groupName, elem, resolve)
-            }).then((talker) => fn(talker))
+            groupNames.forEach(groupName => {
+                new Promise((resolve) => {
+                    scope.__sg_joinRoom(groupName, elem, resolve)
+                }).then((talker) => fn(talker))
+            });
         }
     }
 }

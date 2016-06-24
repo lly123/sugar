@@ -5,49 +5,52 @@ const EVENT_FUNC_REGEX = /^(.+?)>(.+)$/;
 const EVENT_MESSAGE_REGEX = /^(.+?):(.+)$/;
 const FUNC_REGEX = /^>(.+)$/;
 const EVENT_REGEX = /^(.+)$/;
+const EVENT_SPLITTER = /\s*,\s*/;
 
 class EventExpressionExecutor {
     constructor(talker, scope, expression) {
         this._talker = talker;
         this._scope = scope;
-        this._expression = expression;
+        this._expressions = expression.trim().split(EVENT_SPLITTER);
     }
 
     run() {
-        let ret = this.__parse();
-        switch (ret.type) {
-            case 1:
-                this._talker.say(ret.event, this._scope[ret.message])
-                    .then(message => this._scope[ret.attr] = message.data);
-                break;
-            case 2:
-                this._talker.say(ret.event, this._scope[ret.message])
-                    .then(this._scope[ret.func].bind(this._talker));
-                break;
-            case 3:
-                this._talker.say(ret.event)
-                    .then(message => this._scope[ret.attr] = message.data);
-                break;
-            case 4:
-                this._talker.say(ret.event)
-                    .then(this._scope[ret.func].bind(this._talker));
-                break;
-            case 5:
-                this._talker.say(ret.event, this._scope[ret.message]);
-                break;
-            case 6:
-                this._scope[ret.func].call(this._talker);
-                break;
-            case 7:
-                this._talker.say(ret.event);
-                break;
-        }
+        this._expressions.forEach(expr => {
+            let ret = EventExpressionExecutor.__parse(expr);
+            switch (ret.type) {
+                case 1:
+                    this._talker.say(ret.event, this._scope[ret.message])
+                        .then(message => this._scope[ret.attr] = message.data);
+                    break;
+                case 2:
+                    this._talker.say(ret.event, this._scope[ret.message])
+                        .then(this._scope[ret.func].bind(this._talker));
+                    break;
+                case 3:
+                    this._talker.say(ret.event)
+                        .then(message => this._scope[ret.attr] = message.data);
+                    break;
+                case 4:
+                    this._talker.say(ret.event)
+                        .then(this._scope[ret.func].bind(this._talker));
+                    break;
+                case 5:
+                    this._talker.say(ret.event, this._scope[ret.message]);
+                    break;
+                case 6:
+                    this._scope[ret.func].call(this._talker);
+                    break;
+                case 7:
+                    this._talker.say(ret.event);
+                    break;
+            }
+        });
     }
 
-    __parse() {
+    static __parse(expr) {
         var group;
 
-        group = this._expression.match(EVENT_MESSAGE_ATTR_REGEX);
+        group = expr.match(EVENT_MESSAGE_ATTR_REGEX);
         if (group) {
             return {
                 type: 1,
@@ -57,7 +60,7 @@ class EventExpressionExecutor {
             }
         }
 
-        group = this._expression.match(EVENT_MESSAGE_FUNC_REGEX);
+        group = expr.match(EVENT_MESSAGE_FUNC_REGEX);
         if (group) {
             return {
                 type: 2,
@@ -67,7 +70,7 @@ class EventExpressionExecutor {
             }
         }
 
-        group = this._expression.match(EVENT_ATTR_REGEX);
+        group = expr.match(EVENT_ATTR_REGEX);
         if (group) {
             return {
                 type: 3,
@@ -76,7 +79,7 @@ class EventExpressionExecutor {
             }
         }
 
-        group = this._expression.match(EVENT_FUNC_REGEX);
+        group = expr.match(EVENT_FUNC_REGEX);
         if (group) {
             return {
                 type: 4,
@@ -85,7 +88,7 @@ class EventExpressionExecutor {
             }
         }
 
-        group = this._expression.match(EVENT_MESSAGE_REGEX);
+        group = expr.match(EVENT_MESSAGE_REGEX);
         if (group) {
             return {
                 type: 5,
@@ -94,7 +97,7 @@ class EventExpressionExecutor {
             }
         }
 
-        group = this._expression.match(FUNC_REGEX);
+        group = expr.match(FUNC_REGEX);
         if (group) {
             return {
                 type: 6,
@@ -102,7 +105,7 @@ class EventExpressionExecutor {
             }
         }
 
-        group = this._expression.match(EVENT_REGEX);
+        group = expr.match(EVENT_REGEX);
         if (group) {
             return {
                 type: 7,
