@@ -6,11 +6,12 @@ module.exports = function (config) {
         ],
         plugins: [
             require("karma-webpack"),
+            "karma-angular",
             "karma-jasmine",
             "karma-phantomjs-launcher",
             "karma-express-http-server"
         ],
-        frameworks: ['jasmine', 'express-http-server'],
+        frameworks: ['angular', 'jasmine', 'express-http-server'],
         preprocessors: {
             'test-context.js': ['webpack']
         },
@@ -69,6 +70,11 @@ module.exports = function (config) {
                             talker.say("blue", "blue color");
                             talker.say("red", "red color");
                             talker.say("yellow", "yellow color");
+                        });
+
+                        talker.on("event").then(function (message) {
+                            console.log('Received message:', message.event, message.data, '\n');
+                            message.reply(message.data ? 'reply: ' + message.data : 'reply message');
                         });
                     })
                 });

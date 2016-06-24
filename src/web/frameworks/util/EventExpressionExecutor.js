@@ -1,0 +1,117 @@
+const EVENT_MESSAGE_ATTR_REGEX = /^(.+?):(.+?)>>(.+)$/;
+const EVENT_MESSAGE_FUNC_REGEX = /^(.+?):(.+?)>(.+)$/;
+const EVENT_ATTR_REGEX = /^(.+?)>>(.+)$/;
+const EVENT_FUNC_REGEX = /^(.+?)>(.+)$/;
+const EVENT_MESSAGE_REGEX = /^(.+?):(.+)$/;
+const FUNC_REGEX = /^>(.+)$/;
+const EVENT_REGEX = /^(.+)$/;
+
+class EventExpressionExecutor {
+    constructor(talker, scope, expression) {
+        this._talker = talker;
+        this._scope = scope;
+        this._expression = expression;
+    }
+
+    run() {
+        let ret = this.__parse();
+        switch (ret.type) {
+            case 1:
+                this._talker.say(ret.event, this._scope[ret.message])
+                    .then(message => this._scope[ret.attr] = message.data);
+                break;
+            case 2:
+                this._talker.say(ret.event, this._scope[ret.message])
+                    .then(this._scope[ret.func].bind(this._talker));
+                break;
+            case 3:
+                this._talker.say(ret.event)
+                    .then(message => this._scope[ret.attr] = message.data);
+                break;
+            case 4:
+                this._talker.say(ret.event)
+                    .then(this._scope[ret.func].bind(this._talker));
+                break;
+            case 5:
+                this._talker.say(ret.event, this._scope[ret.message]);
+                break;
+            case 6:
+                this._scope[ret.func].call(this._talker);
+                break;
+            case 7:
+                this._talker.say(ret.event);
+                break;
+        }
+    }
+
+    __parse() {
+        var group;
+
+        group = this._expression.match(EVENT_MESSAGE_ATTR_REGEX);
+        if (group) {
+            return {
+                type: 1,
+                event: group[1].trim(),
+                message: group[2].trim(),
+                attr: group[3].trim()
+            }
+        }
+
+        group = this._expression.match(EVENT_MESSAGE_FUNC_REGEX);
+        if (group) {
+            return {
+                type: 2,
+                event: group[1].trim(),
+                message: group[2].trim(),
+                func: group[3].trim()
+            }
+        }
+
+        group = this._expression.match(EVENT_ATTR_REGEX);
+        if (group) {
+            return {
+                type: 3,
+                event: group[1].trim(),
+                attr: group[2].trim()
+            }
+        }
+
+        group = this._expression.match(EVENT_FUNC_REGEX);
+        if (group) {
+            return {
+                type: 4,
+                event: group[1].trim(),
+                func: group[2].trim()
+            }
+        }
+
+        group = this._expression.match(EVENT_MESSAGE_REGEX);
+        if (group) {
+            return {
+                type: 5,
+                event: group[1].trim(),
+                message: group[2].trim()
+            }
+        }
+
+        group = this._expression.match(FUNC_REGEX);
+        if (group) {
+            return {
+                type: 6,
+                func: group[1].trim()
+            }
+        }
+
+        group = this._expression.match(EVENT_REGEX);
+        if (group) {
+            return {
+                type: 7,
+                event: group[1].trim()
+            }
+        }
+    }
+}
+
+export {
+    EventExpressionExecutor
+}

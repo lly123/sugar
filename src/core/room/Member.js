@@ -100,15 +100,15 @@ class Member {
     }
 
     __onMessage(groupName, pipelines, message) {
+        if (message.from == this._id) return;
+
         message.reply = data => {
             return this.say(`${REPLY_GROUP_PREFIX}-${message.id}`, data);
         };
 
         pipelines.forEach(p => {
-            if (message.from != this._id) {
-                setAdd(message.in_groups, groupName);
-                p(message);
-            }
+            setAdd(message.in_groups, groupName);
+            p(message);
         });
     }
 
