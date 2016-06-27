@@ -6,10 +6,13 @@ describe("DOM Parser Test Suite", function () {
     const HTML =
         "<div data-sg-room='http://localhost:3000'>" +
         "   <div data-sg-group='local'>" +
-        "       <div data-sg-id='{{sgId2}}' data-sg-on='chat>receiver'>World</div>" +
+        "       <div data-sg-id='{{sgId2}}' data-sg-on='chat&hi>receiver'>Richard</div>" +
+        "   </div>" +
+        "   <div data-sg-group='local'>" +
+        "       <div data-sg-id='{{sgId3}}' data-sg-say='hi:msg1>receiver3'>Tommy</div>" +
         "   </div>" +
         "   <div data-sg-group='local, group1'>" +
-        "       <div data-sg-id='{{sgId1}}' data-sg-say='chat:message>receiver2, event:message>receiver2'>Hello</div>" +
+        "       <div data-sg-id='{{sgId1}}' data-sg-say='chat:msg2>receiver2, event:msg2>receiver2'>Alan</div>" +
         "   </div>" +
         "</div>";
 
@@ -24,15 +27,25 @@ describe("DOM Parser Test Suite", function () {
         let count = 0;
         scope.sgId1 = "sg1";
         scope.sgId2 = "sg2";
+        scope.sgId3 = "sg3";
 
-        scope.message = "Hello";
+        scope.msg1 = "Tommy";
+        scope.msg2 = "Alan";
 
-        scope.receiver = function (m) {
-            m.reply("Welcome");
+        scope.receiver = function (messages) {
+            messages.forEach(m => {
+                m.reply("Hello " + m.data)
+            });
         };
 
         scope.receiver2 = function (m) {
-            if (m.data == "Welcome" || m.data == "reply: Hello") {
+            if (m.data == "Hello Alan" || m.data == "reply: Alan") {
+                count++;
+            }
+        };
+
+        scope.receiver3 = function (m) {
+            if (m.data == "Hello Tommy") {
                 count++;
             }
         };
@@ -42,7 +55,7 @@ describe("DOM Parser Test Suite", function () {
         document.body.insertAdjacentHTML('beforeend', node.html());
 
         setTimeout(() => {
-            if (count == 2) {
+            if (count == 3) {
                 done();
             }
         }, 4800);

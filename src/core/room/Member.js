@@ -26,8 +26,9 @@ class Member {
     }
 
     addGroup(groupName) {
-        setAdd(this._groupNames, groupName, () =>
-            this._room._emitter.on(groupName, this.__onMessage.bind(this, groupName, this._pipelines)));
+        setAdd(this._groupNames, groupName, () => {
+            this._room._emitter.on(groupName, this.__onMessage.bind(this, groupName, this._pipelines))
+        });
     }
 
     say(event, data = undefined) {

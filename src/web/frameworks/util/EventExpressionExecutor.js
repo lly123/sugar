@@ -8,14 +8,14 @@ const EVENT_REGEX = /^(.+)$/;
 const EVENT_SPLITTER = /\s*,\s*/;
 
 class EventExpressionExecutor {
-    constructor(talker, scope, expression) {
+    constructor(talker, scope, expr) {
         this._talker = talker;
         this._scope = scope;
-        this._expressions = expression.trim().split(EVENT_SPLITTER);
+        this._expr = expr.trim().split(EVENT_SPLITTER);
     }
 
     run() {
-        this._expressions.forEach(expr => {
+        this._expr.forEach(expr => {
             let ret = EventExpressionExecutor.__parse(expr);
             switch (ret.type) {
                 case 1:

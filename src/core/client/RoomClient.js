@@ -7,12 +7,14 @@ const SOCKET_MEMBER_ID = "__socket-io__";
 class RoomClient extends Room {
     constructor(url) {
         super();
-        this._socket = io.connect(url);
+        this._socket = io.connect(url, {
+            "forceNew": true
+        });
 
         return new Promise((resolve, reject) => {
             const send_to_remote = Room.send_to_remote.bind(this, this._socket, "clientMessage");
             const relay_message = Room.relay_message.bind(this, this._socket, "clientMessage");
-            
+
             this._socket._s_id = SOCKET_MEMBER_ID;
             this._socket.on("connect_error", () => reject(this));
 
