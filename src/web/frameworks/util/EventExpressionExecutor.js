@@ -20,7 +20,7 @@ class EventExpressionExecutor {
             switch (ret.type) {
                 case 1:
                     this._talker.say(ret.event, this._scope[ret.message])
-                        .then(message => this._scope[ret.attr] = message.data);
+                        .then(message => this._scope.$apply(this._scope[ret.attr] = message.data));
                     break;
                 case 2:
                     this._talker.say(ret.event, this._scope[ret.message])
@@ -28,7 +28,7 @@ class EventExpressionExecutor {
                     break;
                 case 3:
                     this._talker.say(ret.event)
-                        .then(message => this._scope[ret.attr] = message.data);
+                        .then(message => this._scope.$apply(this._scope[ret.attr] = message.data));
                     break;
                 case 4:
                     this._talker.say(ret.event)

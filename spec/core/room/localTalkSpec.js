@@ -4,7 +4,7 @@ import {Member} from "../../../src/core/room/Member";
 describe("Local Talk Test Suite", function () {
     it("should create member", function (done) {
         let div1 = document.createElement('div');
-        div1._s_id = "div1";
+        div1.__sgId = "div1";
 
         let r = new Room();
         let member = Member.create(r, div1);
@@ -15,8 +15,8 @@ describe("Local Talk Test Suite", function () {
     it("should join member in group", function (done) {
         let div1 = document.createElement('div');
         let div2 = document.createElement('div');
-        div1._s_id = "div1";
-        div2._s_id = "div2";
+        div1.__sgId = "div1";
+        div2.__sgId = "div2";
 
         let r = new Room();
         Promise.all([r.join(div1, "group1"), r.join(div2, "group1")]).then(talkers => {
@@ -34,8 +34,8 @@ describe("Local Talk Test Suite", function () {
     it("should say and receive message", function (done) {
         let div1 = document.createElement('div');
         let div2 = document.createElement('div');
-        div1._s_id = "div1";
-        div2._s_id = "div2";
+        div1.__sgId = "div1";
+        div2.__sgId = "div2";
 
         let r = new Room();
         Promise.all([r.join(div1, "group1"), r.join(div2, "group1")]).then(talkers => {
@@ -52,8 +52,8 @@ describe("Local Talk Test Suite", function () {
     it("should receive and reply message", function (done) {
         let div1 = document.createElement('div');
         let div2 = document.createElement('div');
-        div1._s_id = "div1";
-        div2._s_id = "div2";
+        div1.__sgId = "div1";
+        div2.__sgId = "div2";
 
         let r = new Room();
         Promise.all([r.join(div1, "group1"), r.join(div2, "group1")]).then(talkers => {
@@ -74,8 +74,8 @@ describe("Local Talk Test Suite", function () {
     it("should receive message by regex", function (done) {
         let div1 = document.createElement('div');
         let div2 = document.createElement('div');
-        div1._s_id = "div1";
-        div2._s_id = "div2";
+        div1.__sgId = "div1";
+        div2.__sgId = "div2";
 
         let r = new Room();
         Promise.all([r.join(div1, "group1"), r.join(div2, "group1")]).then(talkers => {
@@ -92,9 +92,9 @@ describe("Local Talk Test Suite", function () {
         let div1 = document.createElement('div');
         let div2 = document.createElement('div');
         let div3 = document.createElement('div');
-        div1._s_id = "div1";
-        div2._s_id = "div2";
-        div3._s_id = "div3";
+        div1.__sgId = "div1";
+        div2.__sgId = "div2";
+        div3.__sgId = "div3";
 
         let r = new Room();
         Promise.all([
@@ -130,9 +130,9 @@ describe("Local Talk Test Suite", function () {
         let div1 = document.createElement('div');
         let div2 = document.createElement('div');
         let div3 = document.createElement('div');
-        div1._s_id = "div1";
-        div2._s_id = "div2";
-        div3._s_id = "div3";
+        div1.__sgId = "div1";
+        div2.__sgId = "div2";
+        div3.__sgId = "div3";
 
         let r = new Room();
         Promise.all([r.join(div1, "group1"), r.join(div2, "group1"), r.join(div3, "group1")]).then(talkers => {

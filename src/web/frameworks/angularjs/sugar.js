@@ -11,3 +11,4 @@ export default angular.module('sugar', [])
     .directive('sgId', () => new sgId())
     .directive('sgSay', () => new sgSay())
     .directive('sgOn', () => new sgOn())
+    .name;

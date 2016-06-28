@@ -7,7 +7,7 @@ import {TableScroller} from "./TableScroller";
 export class Table extends React.Component {
     constructor(props) {
         super(props);
-        this._s_id = props.id;
+        this.__sgId = props.id;
         this.state = {
             header: [],
             rows: []

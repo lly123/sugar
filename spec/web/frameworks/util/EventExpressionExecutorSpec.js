@@ -4,7 +4,7 @@ import {EventExpressionExecutor} from "../../../../src/web/frameworks/util/Event
 describe("Sugar Event Expression Executor Test Suite", function () {
     let scope;
     let div1 = document.createElement('div');
-    div1._s_id = "div1";
+    div1.__sgId = "div1";
 
     beforeEach(inject(function ($rootScope) {
         scope = $rootScope;

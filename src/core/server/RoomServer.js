@@ -16,7 +16,7 @@ export class RoomServer extends Room {
             const relay_message = Room.relay_message.bind(this, socket, "serverMessage");
 
             info(`Client [${socket.id}] has connected.`);
-            socket._s_id = `${SOCKET_MEMBER_ID_PREFIX}-${socket.id}`;
+            socket.__sgId = `${SOCKET_MEMBER_ID_PREFIX}-${socket.id}`;
 
             socket.on("clientEvent", e => {
                 this.join(socket, e.groupNames).then(s => s[e.type](...toArray(e.event)).then(send_to_remote));

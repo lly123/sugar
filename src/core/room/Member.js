@@ -18,7 +18,7 @@ class Member {
     }
 
     static create(room, memberInst) {
-        const member = new Member(room, memberInst._s_id);
+        const member = new Member(room, memberInst.__sgId);
         memberInst.$ = member;
 
         info(`Created member [${member._id}]`);

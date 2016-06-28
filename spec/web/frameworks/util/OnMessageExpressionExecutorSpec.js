@@ -5,10 +5,10 @@ describe("Sugar On Message Expression Executor Test Suite", function () {
     let scope;
 
     let div1 = document.createElement('div');
-    div1._s_id = "div1";
+    div1.__sgId = "div1";
 
     let div2 = document.createElement('div');
-    div2._s_id = "div2";
+    div2.__sgId = "div2";
 
     beforeEach(inject(function ($rootScope) {
         scope = $rootScope;

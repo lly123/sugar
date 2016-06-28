@@ -14,7 +14,7 @@ class sgId {
     }
 
     preLink(scope, elem, attrs) {
-        elem._s_id = attrs['sgId'];
+        elem.__sgId = attrs['sgId'];
 
         let talkerPromise = new Promise(resolve => {
             scope.__sg_joinGroup(elem, resolve);

@@ -41,7 +41,7 @@ module.exports = function (config) {
                 const server = Http.Server(app);
 
                 sugar.roomServer(server).then(function (r) {
-                    r.join({_s_id: 'service1'}, "group1").then(function (talker) {
+                    r.join({__sgId: 'service1'}, "group1").then(function (talker) {
                         talker.on("sum").then(function (m) {
                             talker.say("sumResult", _.reduce(m.data, function (s, v) {
                                 return s + v

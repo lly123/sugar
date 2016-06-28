@@ -1,0 +1,24 @@
+{
+  "name": "sugar-demo",
+  "description": "",
+  "main": "",
+  "authors": [
+    "liyan li"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/lly123/sugar",
+  "moduleType": [
+    "amd"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "socket.io": "~1.4.5",
+    "socket.io-client": "~1.4.5"
+  }
+}

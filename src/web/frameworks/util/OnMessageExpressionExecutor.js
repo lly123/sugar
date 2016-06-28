@@ -14,7 +14,7 @@ class OnMessageExpressionExecutor {
         let ret = OnMessageExpressionExecutor.__parse(this._expr);
         switch (ret.type) {
             case 1:
-                this.__on_event(ret.on).then(message => this._scope[ret.attr] = message.data);
+                this.__on_event(ret.on).then(message => this._scope.$apply(this._scope[ret.attr] = message.data));
                 break;
             case 2:
                 this.__on_event(ret.on).then(this._scope[ret.func].bind(this._talker));

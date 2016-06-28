@@ -3,7 +3,7 @@ import {RoomClient} from "../../../src/core/client/RoomClient";
 describe("Remote Talk Test Suite", function () {
     it("should calculate numbers", function (done) {
         let div1 = document.createElement('div');
-        div1._s_id = "div1";
+        div1.__sgId = "div1";
 
         new RoomClient('http://localhost:3000').then(r => {
             r.join(div1, "group1").then(talker => {

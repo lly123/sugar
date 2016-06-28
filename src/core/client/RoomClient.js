@@ -15,7 +15,7 @@ class RoomClient extends Room {
             const send_to_remote = Room.send_to_remote.bind(this, this._socket, "clientMessage");
             const relay_message = Room.relay_message.bind(this, this._socket, "clientMessage");
 
-            this._socket._s_id = SOCKET_MEMBER_ID;
+            this._socket.__sgId = SOCKET_MEMBER_ID;
             this._socket.on("connect_error", () => reject(this));
 
             this._socket.on("connect", () => {
