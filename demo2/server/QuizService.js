@@ -3,11 +3,16 @@ export class QuizService {
         this.__sgId = "TableService";
 
         room.join(this, "quiz").then(talker => {
-            talker.on("loadQuiz").then(this._loadQuiz);
+            talker.on("load").then(QuizService._load);
         });
     }
 
-    _loadQuiz(message) {
-        message.reply("1+1=?")
+    static _load(message) {
+        message.reply([
+            {
+                id: 1,
+                question: "1+1=?"
+            }
+        ])
     }
 }
