@@ -5,8 +5,9 @@ import {toArray} from "../util/lang";
 const SOCKET_MEMBER_ID = "__socket-io__";
 
 class RoomClient extends Room {
-    constructor(url) {
-        super();
+    constructor(url, replyTimeout = 5000) {
+        super(replyTimeout);
+
         this._socket = io.connect(url, {
             "forceNew": true
         });

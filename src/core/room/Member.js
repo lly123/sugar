@@ -36,7 +36,9 @@ class Member {
 
         const promise = new Promise(resolve => {
             const groupName = `${REPLY_GROUP_PREFIX}-${message_id}`;
-            this._room._emitter.once(groupName, this.__onMessage.bind(this, groupName, [resolve]));
+            const listener = this.__onMessage.bind(this, groupName, [resolve]);
+            this._room._emitter.once(groupName, listener);
+            setTimeout(() => this._room._emitter.removeListener(groupName, listener), this._room._replyTimeout);
         });
 
         const message = {

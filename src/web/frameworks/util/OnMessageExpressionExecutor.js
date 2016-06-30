@@ -1,5 +1,7 @@
+import {EventExpressionExecutor} from "./EventExpressionExecutor";
 const ON_MESSAGE_ATTR_REGEX = /^(.+?)>>(.+)$/;
 const ON_MESSAGE_FUNC_REGEX = /^(.+?)>(.+)$/;
+
 const EVENT_AND_SPLITTER = /\s*&\s*/;
 const EVENT_OR_SPLITTER = /\s*\|\s*/;
 
@@ -15,7 +17,8 @@ class OnMessageExpressionExecutor {
         switch (ret.type) {
             case 1:
                 this.__on_event(ret.on)
-                    .then(m => this._scope.$apply(this._scope[ret.attr] = m.data));
+                    .then(m => this._scope.$apply(
+                        () => EventExpressionExecutor.scope_attr_setter(this._scope, ret.attr, m.data)));
                 break;
             case 2:
                 this.__on_event(ret.on)

@@ -7,8 +7,9 @@ import {info} from "../util/logger";
 const EventEmitter = Events.EventEmitter;
 
 class Room {
-    constructor() {
+    constructor(replyTimeout) {
         this._emitter = new EventEmitter();
+        this._replyTimeout = replyTimeout;
         this._groupNames = [];
     }
 
@@ -31,11 +32,13 @@ class Room {
 
     static relay_message(socket, remoteMessageEvent, message) {
         const groupName = `${REPLY_GROUP_PREFIX}-${message.id}`;
-
-        this._emitter.once(groupName, m => {
+        const listener = m => {
             setAdd(m.in_groups, groupName);
             socket.emit(remoteMessageEvent, m);
-        });
+        };
+
+        this._emitter.once(groupName, listener);
+        setTimeout(() => this._emitter.removeListener(groupName, listener), this._replyTimeout);
 
         message.__remote__ = true;
         message.in_groups.forEach(g => this._emitter.emit(g, message));

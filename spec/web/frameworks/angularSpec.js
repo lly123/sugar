@@ -6,13 +6,13 @@ describe("DOM Parser Test Suite", function () {
     const HTML =
         "<div data-sg-room='http://localhost:3000'>" +
         "   <div data-sg-group='local'>" +
-        "       <div data-sg-id='{{sgId2}}' data-sg-on='chat&hi>receiver'>Richard</div>" +
+        "       <div data-sg-id='{{sgId2}}' data-sg-on='chat & hi & obj>receiver'>Richard</div>" +
         "   </div>" +
         "   <div data-sg-group='local'>" +
-        "       <div data-sg-id='{{sgId3}}' data-sg-say='hi:msg1>receiver3'>Tommy</div>" +
+        "       <div data-sg-id='{{sgId3}}' data-sg-say='hi:msg1>receiver3 | obj:{msg1,msg2}>receiver5'>Tommy</div>" +
         "   </div>" +
         "   <div data-sg-group='local, group1'>" +
-        "       <div data-sg-id='{{sgId1}}' data-sg-say='chat:msg2>receiver2, event:msg2>receiver2'>Alan</div>" +
+        "       <div data-sg-id='{{sgId1}}' data-sg-say='chat:msg2>receiver2 | event:msg2>receiver2'>Alan</div>" +
         "   </div>" +
         "</div>";
 
@@ -34,7 +34,11 @@ describe("DOM Parser Test Suite", function () {
 
         scope.receiver = function (messages) {
             messages.forEach(m => {
-                m.reply("Hello " + m.data)
+                if (m.event == 'obj') {
+                    m.reply("Hello " + m.data.msg1 + ", " + m.data.msg2)
+                } else {
+                    m.reply("Hello " + m.data)
+                }
             });
         };
 
@@ -50,12 +54,18 @@ describe("DOM Parser Test Suite", function () {
             }
         };
 
+        scope.receiver5 = function (m) {
+            if (m.data == "Hello Tommy, Alan") {
+                count++;
+            }
+        };
+
         var node = compile(HTML)(scope);
         scope.$digest();
         document.body.insertAdjacentHTML('beforeend', node.html());
 
         setTimeout(() => {
-            if (count == 3) {
+            if (count == 4) {
                 done();
             }
         }, 4800);

@@ -6,8 +6,9 @@ import {toArray} from "../util/lang";
 const SOCKET_MEMBER_ID_PREFIX = "__socket-io__";
 
 export class RoomServer extends Room {
-    constructor(server) {
-        super();
+    constructor(server, replyTimeout = 5000) {
+        super(replyTimeout);
+        
         this._io = io.listen(server);
         this._events = [];
 
