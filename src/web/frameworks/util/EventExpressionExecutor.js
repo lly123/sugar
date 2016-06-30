@@ -20,25 +20,25 @@ class EventExpressionExecutor {
             switch (ret.type) {
                 case 1:
                     this._talker.say(ret.event, this._scope[ret.message])
-                        .then(message => this._scope.$apply(this._scope[ret.attr] = message.data));
+                        .then(m => this._scope.$apply(this._scope[ret.attr] = m.data));
                     break;
                 case 2:
                     this._talker.say(ret.event, this._scope[ret.message])
-                        .then(this._scope[ret.func].bind(this._talker));
+                        .then(m => this._scope.$apply(() => this._scope[ret.func].call(this._talker, m)));
                     break;
                 case 3:
                     this._talker.say(ret.event)
-                        .then(message => this._scope.$apply(this._scope[ret.attr] = message.data));
+                        .then(m => this._scope.$apply(this._scope[ret.attr] = m.data));
                     break;
                 case 4:
                     this._talker.say(ret.event)
-                        .then(this._scope[ret.func].bind(this._talker));
+                        .then(m => this._scope.$apply(() => this._scope[ret.func].call(this._talker, m)));
                     break;
                 case 5:
                     this._talker.say(ret.event, this._scope[ret.message]);
                     break;
                 case 6:
-                    this._scope[ret.func].call(this._talker);
+                    this._scope.$apply(() => this._scope[ret.func].call(this._talker));
                     break;
                 case 7:
                     this._talker.say(ret.event);
