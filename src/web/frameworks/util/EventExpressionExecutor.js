@@ -14,6 +14,7 @@ const OBJECT_MESSAGE = /^\{(.+?)}$/;
 const MESSAGE_FIELD_SPLITTER = /\s*,\s*/;
 
 const APPEND_ATTR = /^\+(.+)$/;
+const DEL_ATTR = /^\-(.+)$/;
 
 
 class EventExpressionExecutor {
@@ -128,23 +129,41 @@ class EventExpressionExecutor {
     __generateEventMessage(message) {
         let match = message.match(OBJECT_MESSAGE);
         if (match) {
+            let self = this;
             let fields = match[1].trim().split(MESSAGE_FIELD_SPLITTER);
             let o = {};
-            fields.forEach(f => o[f] = this._scope[f]);
+            fields.forEach(f => {
+                let replace_dot_in_field_with_underscore = f.replace(/\./g, '_');
+                o[replace_dot_in_field_with_underscore] = eval("self._scope." + f);
+            });
             return o
         } else {
-            return this._scope[message]
+            return eval("this._scope." + message)
         }
     }
 
     static scope_attr_setter(scope, attr, data) {
-        let match = attr.match(APPEND_ATTR);
+        var match;
+
+        match = attr.match(APPEND_ATTR);
         if (match) {
             attr = match[1];
             if (scope[attr] && _.isArray(scope[attr])) {
                 scope[attr].push(data)
             } else {
                 scope[attr] = [data]
+            }
+            return
+        }
+
+        match = attr.match(DEL_ATTR);
+        if (match) {
+            attr = match[1];
+            if (scope[attr] && _.isArray(scope[attr])) {
+                let arr = scope[attr];
+                for (let i = arr.length - 1; i >= 0; i--) {
+                    if (arr[i].id == data) arr.splice(i, 1);
+                }
             }
             return
         }

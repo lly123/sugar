@@ -5,6 +5,7 @@ export class QuizService {
         room.join(this, "quiz").then(talker => {
             talker.on("load").then(QuizService.load);
             talker.on("create").then(QuizService.create);
+            talker.on("del").then(QuizService.del);
         });
     }
 
@@ -18,11 +19,15 @@ export class QuizService {
     }
 
     static create(message) {
-        console.log('>>>>', message.data.question);
-
         message.reply({
             id: 999,
             question: message.data.question
         })
+    }
+
+    static del(message) {
+        console.log('*****', message.data);
+
+        message.reply(message.data.quiz_id)
     }
 }
