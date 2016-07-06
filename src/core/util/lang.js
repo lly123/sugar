@@ -31,5 +31,5 @@ function setAdd(arr, value, resolve = EMPTY_FUNC, reject = EMPTY_FUNC, key = (v 
 }
 
 export {
-    toArray, union, unionDictValue, setAdd
+    EMPTY_FUNC, toArray, union, unionDictValue, setAdd
 };

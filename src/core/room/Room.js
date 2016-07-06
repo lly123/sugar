@@ -10,18 +10,18 @@ class Room {
     constructor(replyTimeout) {
         this._emitter = new EventEmitter();
         this._replyTimeout = replyTimeout;
-        this._groupNames = [];
     }
 
-    join(memberInst, groupName) {
-        const member = memberInst.$ || Member.create(this, memberInst);
+    join(memberInst, groupNames) {
+        const member = memberInst.$__sgInst__ || Member.create(this, memberInst);
+        toArray(groupNames).forEach(n => member.addGroup(n));
+        return Promise.resolve(member);
+    }
 
-        toArray(groupName).forEach(n => {
-            setAdd(this._groupNames, n);
-            member.addGroup(n);
-        });
-
-        return Promise.resolve(memberInst.$);
+    quit(memberInst) {
+        if (memberInst.$__sgInst__) {
+            memberInst.$__sgInst__.quit()
+        }
     }
 
     static send_to_remote(socket, remoteMessageEvent, message) {

@@ -2,7 +2,7 @@ import _ from "underscore";
 import {Promise} from "es6-promise";
 import uuid from "uuid";
 import {info} from "../util/logger";
-import {setAdd} from "../util/lang";
+import {setAdd, EMPTY_FUNC} from "../util/lang";
 
 const PromisePipe = require('promise-pipe')();
 const REPLY_GROUP_PREFIX = "__reply__";
@@ -12,23 +12,39 @@ class Member {
     constructor(room, id) {
         this._room = room;
         this._id = id;
-        this._groupNames = [];
+        this._groups = [];
         this._pipelines = [];
         this._registerEventCallback = room.__registerEvent.bind(room);
     }
 
     static create(room, memberInst) {
         const member = new Member(room, memberInst.__sgId);
-        memberInst.$ = member;
+        memberInst.$__sgInst__ = member;
 
         info(`Created member [${member._id}]`);
         return member;
     }
 
-    addGroup(groupName) {
-        setAdd(this._groupNames, groupName, () => {
-            this._room._emitter.on(groupName, this.__onMessage.bind(this, groupName, this._pipelines))
+    quit() {
+        this._groups.forEach(g => {
+            g.quit();
+            info(`Member [${this._id}] has quited group [${g.name}]`)
         });
+    }
+
+    addGroup(groupName) {
+        let messageHandler = this.__onMessage.bind(this, groupName, this._pipelines);
+
+        let group = {
+            name: groupName,
+            join: () => this._room._emitter.on(groupName, messageHandler),
+            quit: () => this._room._emitter.removeListener(groupName, messageHandler)
+        };
+
+        setAdd(this._groups, group, () => {
+            group.join();
+            info(`Member [${this._id}] has joined group [${group.name}]`)
+        }, EMPTY_FUNC, v => v.name);
     }
 
     say(event, data = undefined) {
@@ -56,7 +72,7 @@ class Member {
             this._room._emitter.emit(event, message);
         } else {
             message['event'] = event;
-            this._groupNames.forEach(n => this._room._emitter.emit(n, message));
+            this._groups.forEach(g => this._room._emitter.emit(g.name, message));
         }
 
         return promise;
@@ -64,7 +80,7 @@ class Member {
 
     on(event) {
         let ret = this.__addPipeline(this.__eventPipeline(event));
-        this._registerEventCallback(this._id, this._groupNames, 'on', event);
+        this._registerEventCallback(this._id, _.map(this._groups, g => g.name), 'on', event);
         return ret;
     }
 
@@ -81,7 +97,7 @@ class Member {
         }));
 
         this.__addPipeline(m => _.each(eventPipelines, p => p(m)));
-        this._registerEventCallback(this._id, this._groupNames, 'on_all', events);
+        this._registerEventCallback(this._id, _.map(this._groups, g => g.name), 'on_all', events);
         return ret;
     }
 
@@ -98,7 +114,7 @@ class Member {
         }));
 
         this.__addPipeline(m => _.each(eventPipelines, p => p(m)));
-        this._registerEventCallback(this._id, this._groupNames, 'on_race', events);
+        this._registerEventCallback(this._id, _.map(this._groups, g => g.name), 'on_race', events);
         return ret;
     }
 

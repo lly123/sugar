@@ -17,7 +17,10 @@ class sgId {
         elem.__sgId = attrs['sgId'];
 
         let talkerPromise = new Promise(resolve => {
-            scope.__sg_joinGroup(elem, resolve);
+            scope.__sg_joinGroup(elem, talker => {
+                scope.$on('$destroy', () => scope.__sg_quitRoom(elem));
+                resolve(talker)
+            })
         });
 
         elem.$sg = fn => {

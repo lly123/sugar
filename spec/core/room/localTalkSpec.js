@@ -8,7 +8,7 @@ describe("Local Talk Test Suite", function () {
 
         let r = new Room();
         let member = Member.create(r, div1);
-        expect(div1.$).toBe(member);
+        expect(div1.$__sgInst__).toBe(member);
         done();
     });
 

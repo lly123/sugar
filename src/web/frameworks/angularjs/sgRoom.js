@@ -24,6 +24,10 @@ class sgRoom {
         scope.__sg_joinRoom = (groupName, elem, fn) => {
             this._room.then(r => r.join(elem, groupName).then(talker => fn(talker)));
         };
+
+        scope.__sg_quitRoom = elem => {
+            this._room.then(r => r.quit(elem));
+        };
     }
 }
 
