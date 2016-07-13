@@ -11,9 +11,7 @@ class sgSay {
     }
 
     preLink(scope, elem, attrs) {
-        elem.$sg(talker => {
-            new EventExpressionExecutor(talker, scope, attrs['sgSay']).run();
-        });
+        scope.__sg_talker.then(t => new EventExpressionExecutor(t, scope, attrs['sgSay']).run())
     }
 }
 

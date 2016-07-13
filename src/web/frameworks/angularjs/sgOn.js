@@ -11,9 +11,7 @@ class sgOn {
     }
 
     preLink(scope, elem, attrs) {
-        elem.$sg(talker => {
-            new OnMessageExpressionExecutor(talker, scope, attrs['sgOn']).run();
-        });
+        scope.__sg_talker.then(t => new OnMessageExpressionExecutor(t, scope, attrs['sgOn']).run())
     }
 }
 

@@ -14,18 +14,14 @@ class sgId {
     }
 
     preLink(scope, elem, attrs) {
-        elem.__sgId = attrs['sgId'];
+        scope.__sg_talker = new Promise(resolve => {
+            elem.__sgId = attrs['sgId'];
 
-        let talkerPromise = new Promise(resolve => {
             scope.__sg_joinGroup(elem, talker => {
                 scope.$on('$destroy', () => scope.__sg_quitRoom(elem));
                 resolve(talker)
             })
-        });
-
-        elem.$sg = fn => {
-            talkerPromise.then(talker => fn(talker))
-        };
+        })
     }
 }
 

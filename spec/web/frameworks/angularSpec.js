@@ -5,15 +5,14 @@ describe("DOM Parser Test Suite", function () {
 
     const HTML =
         "<div data-sg-room='http://localhost:3000'>" +
-        "   <div data-sg-group='local'>" +
-        "       <div data-sg-id='{{sgId2}}' data-sg-on='chat & hi & obj>receiver'>Richard</div>" +
+        "   <div data-sg-group='local' data-sg-id='{{sgId2}}'>" +
+        "       <div data-sg-on='chat & hi & obj>receiver'>Richard</div>" +
         "   </div>" +
-        "   <div data-sg-group='local'>" +
-        "       <div data-sg-id='{{sgId3}}'" +
-        "            data-sg-say='hi:msg1>receiver3 | obj:{msgObj.id,msgObj.text}>receiver5'>Tommy</div>" +
+        "   <div data-sg-group='local' data-sg-id='{{sgId3}}'>" +
+        "       <div data-sg-say='hi:msg1>receiver3 | obj:{msgObj.id,msgObj.text}>receiver5'>Tommy</div>" +
         "   </div>" +
-        "   <div data-sg-group='local, group1'>" +
-        "       <div data-sg-id='{{sgId1}}' data-sg-say='chat:msg2>receiver2 | event:msg2>receiver2'>Alan</div>" +
+        "   <div data-sg-group='local, group1' data-sg-id='{{sgId1}}'>" +
+        "       <div data-sg-say='chat:msg2>receiver2 | event:msg2>receiver2'>Alan</div>" +
         "   </div>" +
         "</div>";
 

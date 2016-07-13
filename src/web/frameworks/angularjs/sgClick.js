@@ -8,10 +8,8 @@ class sgClick {
 
     link(scope, elem, attrs) {
         elem.on("click", () => {
-            elem.$sg(talker => {
-                new EventExpressionExecutor(talker, scope, attrs['sgClick']).run();
-            });
-        });
+            scope.__sg_talker.then(t => new EventExpressionExecutor(t, scope, attrs['sgClick']).run());
+        })
     }
 }
 

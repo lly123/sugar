@@ -13,7 +13,7 @@ class sgRoom {
         this._room = Promise.resolve(new Room());
     }
 
-    controller($attrs) {
+    controller() {
     }
 
     preLink(scope, elem, attrs) {
