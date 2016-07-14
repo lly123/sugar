@@ -6,13 +6,15 @@ describe("DOM Parser Test Suite", function () {
     const HTML =
         "<div data-sg-room='http://localhost:3000'>" +
         "   <div data-sg-group='local' data-sg-id='{{sgId2}}'>" +
-        "       <div data-sg-on='chat & hi & obj>receiver'>Richard</div>" +
+        "       <div data-sg-on='chat & hi & obj>receiver'></div>" +
         "   </div>" +
         "   <div data-sg-group='local' data-sg-id='{{sgId3}}'>" +
-        "       <div data-sg-say='hi:msg1>receiver3 | obj:{msgObj.id,msgObj.text}>receiver5'>Tommy</div>" +
+        "       <div data-sg-say='hi:msg1>receiver3'></div>" +
+        "       <div data-sg-say='obj:{msgObj.id,msgObj.text}>receiver5'></div>" +
         "   </div>" +
         "   <div data-sg-group='local, group1' data-sg-id='{{sgId1}}'>" +
-        "       <div data-sg-say='chat:msg2>receiver2 | event:msg2>receiver2'>Alan</div>" +
+        "       <div data-sg-say='chat:msg2>receiver2'></div>" +
+        "       <div data-sg-say='event:msg2>receiver2'></div>" +
         "   </div>" +
         "</div>";
 

@@ -5,8 +5,8 @@ export class QuizService {
 
         room.join(this, "quiz").then(talker => {
             talker.on("load").then(QuizService.load.bind(this));
-            talker.on("create").then(QuizService.create.bind(this));
-            talker.on("del").then(QuizService.del);
+            talker.on("create").then(QuizService.create.bind(this, talker));
+            talker.on("delete").then(QuizService.del.bind(this, talker));
         });
     }
 
@@ -19,14 +19,16 @@ export class QuizService {
         ])
     }
 
-    static create(message) {
-        message.reply({
-            id: this.quiz_id++,
+    static create(talker, message) {
+        talker.say("created", {
+            id: ++this.quiz_id,
             question: message.data.question
         })
     }
 
-    static del(message) {
-        message.reply(message.data.quiz_id)
+    static del(talker, message) {
+        talker.say("deleted", {
+            id: message.data.quiz_id
+        })
     }
 }
