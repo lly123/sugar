@@ -5,6 +5,7 @@ import CookieParser from "cookie-parser";
 import BodyParser from "body-parser";
 import {roomServer} from "../../build/sugar";
 import {QuizService} from "./QuizService";
+import {UserService} from "./UserService";
 
 const app = Express();
 const server = Http.Server(app);
@@ -16,6 +17,7 @@ app.use(Express.static('./build/web'));
 
 roomServer(server).then(function (r) {
     new QuizService(r);
+    new UserService(r);
 });
 
 // catch 404 and forward to error handler

@@ -1,12 +1,13 @@
 export class QuizService {
     constructor(room) {
-        this.__sgId = "TableService";
+        this.__sgId = "QuizService";
         this.quiz_id = 1;
 
         room.join(this, "quiz").then(talker => {
             talker.on("load").then(QuizService.load.bind(this));
             talker.on("create").then(QuizService.create.bind(this, talker));
             talker.on("delete").then(QuizService.del.bind(this, talker));
+            talker.on("answer").then(QuizService.answer.bind(this, talker));
         });
     }
 
@@ -30,5 +31,9 @@ export class QuizService {
         talker.say("deleted", {
             id: message.data.quiz_id
         })
+    }
+
+    static answer(talker, message) {
+        console.log('>>>', message)
     }
 }

@@ -35,6 +35,8 @@ const common = {
                 ]
             },
 
+            {test: /bootstrap/, loader: 'imports?jQuery=jquery'},
+
             {test: /\.styl/, loader: 'style!css!stylus'},
             {test: /\.css$/, loader: 'style!css'},
             {test: /\.html$/, loader: "html"},
